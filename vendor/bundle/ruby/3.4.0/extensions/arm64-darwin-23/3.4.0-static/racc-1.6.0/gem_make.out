@@ -1,0 +1,20 @@
+current directory: /Users/hoanganh692004/Desktop/johnx69.github.io/vendor/bundle/ruby/3.4.0/gems/racc-1.6.0/ext/racc/cparse
+/Users/hoanganh692004/.rubies/ruby-3.4.1/bin/ruby extconf.rb
+checking for rb_block_call()... yes
+checking for rb_ary_subseq()... yes
+creating Makefile
+
+current directory: /Users/hoanganh692004/Desktop/johnx69.github.io/vendor/bundle/ruby/3.4.0/gems/racc-1.6.0/ext/racc/cparse
+make DESTDIR\= sitearchdir\=./.gem.20251116-62677-tvu7fz sitelibdir\=./.gem.20251116-62677-tvu7fz clean
+
+current directory: /Users/hoanganh692004/Desktop/johnx69.github.io/vendor/bundle/ruby/3.4.0/gems/racc-1.6.0/ext/racc/cparse
+make DESTDIR\= sitearchdir\=./.gem.20251116-62677-tvu7fz sitelibdir\=./.gem.20251116-62677-tvu7fz
+compiling cparse.c
+linking shared-object racc/cparse.bundle
+
+current directory: /Users/hoanganh692004/Desktop/johnx69.github.io/vendor/bundle/ruby/3.4.0/gems/racc-1.6.0/ext/racc/cparse
+make DESTDIR\= sitearchdir\=./.gem.20251116-62677-tvu7fz sitelibdir\=./.gem.20251116-62677-tvu7fz install
+/usr/bin/install -c -m 0755 cparse.bundle ./.gem.20251116-62677-tvu7fz/racc
+
+current directory: /Users/hoanganh692004/Desktop/johnx69.github.io/vendor/bundle/ruby/3.4.0/gems/racc-1.6.0/ext/racc/cparse
+make DESTDIR\= sitearchdir\=./.gem.20251116-62677-tvu7fz sitelibdir\=./.gem.20251116-62677-tvu7fz clean

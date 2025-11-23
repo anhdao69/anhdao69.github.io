@@ -1,0 +1,252 @@
+[
+    {
+        "label": "scholarly",
+        "importPath": "scholarly",
+        "description": "scholarly",
+        "isExtraImport": true,
+        "detail": "scholarly",
+        "documentation": {}
+    },
+    {
+        "label": "jsonpickle",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "jsonpickle",
+        "description": "jsonpickle",
+        "detail": "jsonpickle",
+        "documentation": {}
+    },
+    {
+        "label": "json",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "json",
+        "description": "json",
+        "detail": "json",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "os",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "subprocess",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "subprocess",
+        "description": "subprocess",
+        "detail": "subprocess",
+        "documentation": {}
+    },
+    {
+        "label": "errno",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "errno",
+        "description": "errno",
+        "detail": "errno",
+        "documentation": {}
+    },
+    {
+        "label": "collections",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "collections",
+        "description": "collections",
+        "detail": "collections",
+        "documentation": {}
+    },
+    {
+        "label": "glob",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "glob",
+        "description": "glob",
+        "detail": "glob",
+        "documentation": {}
+    },
+    {
+        "label": "argparse",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "argparse",
+        "description": "argparse",
+        "detail": "argparse",
+        "documentation": {}
+    },
+    {
+        "label": "name",
+        "kind": 5,
+        "importPath": "google_scholar_crawler.main",
+        "description": "google_scholar_crawler.main",
+        "peekOfCode": "name = author['name']\nauthor['updated'] = str(datetime.now())\nauthor['publications'] = {v['author_pub_id']:v for v in author['publications']}\nprint(json.dumps(author, indent=2))\nos.makedirs('results', exist_ok=True)\nwith open(f'results/gs_data.json', 'w') as outfile:\n    json.dump(author, outfile, ensure_ascii=False)\nshieldio_data = {\n  \"schemaVersion\": 1,\n  \"label\": \"citations\",",
+        "detail": "google_scholar_crawler.main",
+        "documentation": {}
+    },
+    {
+        "label": "author['updated']",
+        "kind": 5,
+        "importPath": "google_scholar_crawler.main",
+        "description": "google_scholar_crawler.main",
+        "peekOfCode": "author['updated'] = str(datetime.now())\nauthor['publications'] = {v['author_pub_id']:v for v in author['publications']}\nprint(json.dumps(author, indent=2))\nos.makedirs('results', exist_ok=True)\nwith open(f'results/gs_data.json', 'w') as outfile:\n    json.dump(author, outfile, ensure_ascii=False)\nshieldio_data = {\n  \"schemaVersion\": 1,\n  \"label\": \"citations\",\n  \"message\": f\"{author['citedby']}\",",
+        "detail": "google_scholar_crawler.main",
+        "documentation": {}
+    },
+    {
+        "label": "author['publications']",
+        "kind": 5,
+        "importPath": "google_scholar_crawler.main",
+        "description": "google_scholar_crawler.main",
+        "peekOfCode": "author['publications'] = {v['author_pub_id']:v for v in author['publications']}\nprint(json.dumps(author, indent=2))\nos.makedirs('results', exist_ok=True)\nwith open(f'results/gs_data.json', 'w') as outfile:\n    json.dump(author, outfile, ensure_ascii=False)\nshieldio_data = {\n  \"schemaVersion\": 1,\n  \"label\": \"citations\",\n  \"message\": f\"{author['citedby']}\",\n}",
+        "detail": "google_scholar_crawler.main",
+        "documentation": {}
+    },
+    {
+        "label": "shieldio_data",
+        "kind": 5,
+        "importPath": "google_scholar_crawler.main",
+        "description": "google_scholar_crawler.main",
+        "peekOfCode": "shieldio_data = {\n  \"schemaVersion\": 1,\n  \"label\": \"citations\",\n  \"message\": f\"{author['citedby']}\",\n}\nwith open(f'results/gs_data_shieldsio.json', 'w') as outfile:\n    json.dump(shieldio_data, outfile, ensure_ascii=False)",
+        "detail": "google_scholar_crawler.main",
+        "documentation": {}
+    },
+    {
+        "label": "Platform",
+        "kind": 6,
+        "importPath": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "description": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "peekOfCode": "class Platform(object):\n    pass\nclass simulator_platform(Platform):\n    directory = 'darwin_ios'\n    sdk = 'iphonesimulator'\n    arch = 'i386'\n    triple = 'i386-apple-darwin11'\n    version_min = '-miphoneos-version-min=7.0'\n    prefix = \"#ifdef __i386__\\n\\n\"\n    suffix = \"\\n\\n#endif\"",
+        "detail": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "documentation": {}
+    },
+    {
+        "label": "simulator_platform",
+        "kind": 6,
+        "importPath": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "description": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "peekOfCode": "class simulator_platform(Platform):\n    directory = 'darwin_ios'\n    sdk = 'iphonesimulator'\n    arch = 'i386'\n    triple = 'i386-apple-darwin11'\n    version_min = '-miphoneos-version-min=7.0'\n    prefix = \"#ifdef __i386__\\n\\n\"\n    suffix = \"\\n\\n#endif\"\n    src_dir = 'x86'\n    src_files = ['sysv.S', 'ffi.c', 'internal.h']",
+        "detail": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "documentation": {}
+    },
+    {
+        "label": "simulator64_platform",
+        "kind": 6,
+        "importPath": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "description": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "peekOfCode": "class simulator64_platform(Platform):\n    directory = 'darwin_ios'\n    sdk = 'iphonesimulator'\n    arch = 'x86_64'\n    triple = 'x86_64-apple-darwin13'\n    version_min = '-miphoneos-version-min=7.0'\n    prefix = \"#ifdef __x86_64__\\n\\n\"\n    suffix = \"\\n\\n#endif\"\n    src_dir = 'x86'\n    src_files = ['unix64.S', 'ffi64.c', 'ffiw64.c', 'win64.S', 'internal64.h', 'asmnames.h']",
+        "detail": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "documentation": {}
+    },
+    {
+        "label": "device_platform",
+        "kind": 6,
+        "importPath": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "description": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "peekOfCode": "class device_platform(Platform):\n    directory = 'darwin_ios'\n    sdk = 'iphoneos'\n    arch = 'armv7'\n    triple = 'arm-apple-darwin11'\n    version_min = '-miphoneos-version-min=7.0'\n    prefix = \"#ifdef __arm__\\n\\n\"\n    suffix = \"\\n\\n#endif\"\n    src_dir = 'arm'\n    src_files = ['sysv.S', 'ffi.c', 'internal.h']",
+        "detail": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "documentation": {}
+    },
+    {
+        "label": "device64_platform",
+        "kind": 6,
+        "importPath": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "description": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "peekOfCode": "class device64_platform(Platform):\n    directory = 'darwin_ios'\n    sdk = 'iphoneos'\n    arch = 'arm64'\n    triple = 'aarch64-apple-darwin13'\n    version_min = '-miphoneos-version-min=7.0'\n    prefix = \"#ifdef __arm64__\\n\\n\"\n    suffix = \"\\n\\n#endif\"\n    src_dir = 'aarch64'\n    src_files = ['sysv.S', 'ffi.c', 'internal.h']",
+        "detail": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "documentation": {}
+    },
+    {
+        "label": "desktop32_platform",
+        "kind": 6,
+        "importPath": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "description": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "peekOfCode": "class desktop32_platform(Platform):\n    directory = 'darwin_osx'\n    sdk = 'macosx'\n    arch = 'i386'\n    triple = 'i386-apple-darwin10'\n    version_min = '-mmacosx-version-min=10.6'\n    src_dir = 'x86'\n    src_files = ['sysv.S', 'ffi.c', 'internal.h']\n    prefix = \"#ifdef __i386__\\n\\n\"\n    suffix = \"\\n\\n#endif\"",
+        "detail": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "documentation": {}
+    },
+    {
+        "label": "desktop64_platform",
+        "kind": 6,
+        "importPath": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "description": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "peekOfCode": "class desktop64_platform(Platform):\n    directory = 'darwin_osx'\n    sdk = 'macosx'\n    arch = 'x86_64'\n    triple = 'x86_64-apple-darwin10'\n    version_min = '-mmacosx-version-min=10.6'\n    prefix = \"#ifdef __x86_64__\\n\\n\"\n    suffix = \"\\n\\n#endif\"\n    src_dir = 'x86'\n    src_files = ['unix64.S', 'ffi64.c', 'ffiw64.c', 'win64.S', 'internal64.h', 'asmnames.h']",
+        "detail": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "documentation": {}
+    },
+    {
+        "label": "mkdir_p",
+        "kind": 2,
+        "importPath": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "description": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "peekOfCode": "def mkdir_p(path):\n    try:\n        os.makedirs(path)\n    except OSError as exc:  # Python >2.5\n        if exc.errno != errno.EEXIST:\n            raise\ndef move_file(src_dir, dst_dir, filename, file_suffix=None, prefix='', suffix=''):\n    mkdir_p(dst_dir)\n    out_filename = filename\n    if file_suffix:",
+        "detail": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "documentation": {}
+    },
+    {
+        "label": "move_file",
+        "kind": 2,
+        "importPath": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "description": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "peekOfCode": "def move_file(src_dir, dst_dir, filename, file_suffix=None, prefix='', suffix=''):\n    mkdir_p(dst_dir)\n    out_filename = filename\n    if file_suffix:\n        if filename in ['internal64.h', 'asmnames.h', 'internal.h']:\n            out_filename = filename\n        else:\n            split_name = os.path.splitext(filename)\n            out_filename = \"%s_%s%s\" % (split_name[0], file_suffix, split_name[1])\n    with open(os.path.join(src_dir, filename)) as in_file:",
+        "detail": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "documentation": {}
+    },
+    {
+        "label": "list_files",
+        "kind": 2,
+        "importPath": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "description": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "peekOfCode": "def list_files(src_dir, pattern=None, filelist=None):\n    if pattern: filelist = glob.iglob(os.path.join(src_dir, pattern))\n    for file in filelist:\n        yield os.path.basename(file)\ndef copy_files(src_dir, dst_dir, pattern=None, filelist=None, file_suffix=None, prefix=None, suffix=None):\n    for filename in list_files(src_dir, pattern=pattern, filelist=filelist):\n        move_file(src_dir, dst_dir, filename, file_suffix=file_suffix, prefix=prefix, suffix=suffix)\ndef copy_src_platform_files(platform):\n    src_dir = os.path.join('src', platform.src_dir)\n    dst_dir = os.path.join(platform.directory, 'src', platform.src_dir)",
+        "detail": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "documentation": {}
+    },
+    {
+        "label": "copy_files",
+        "kind": 2,
+        "importPath": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "description": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "peekOfCode": "def copy_files(src_dir, dst_dir, pattern=None, filelist=None, file_suffix=None, prefix=None, suffix=None):\n    for filename in list_files(src_dir, pattern=pattern, filelist=filelist):\n        move_file(src_dir, dst_dir, filename, file_suffix=file_suffix, prefix=prefix, suffix=suffix)\ndef copy_src_platform_files(platform):\n    src_dir = os.path.join('src', platform.src_dir)\n    dst_dir = os.path.join(platform.directory, 'src', platform.src_dir)\n    copy_files(src_dir, dst_dir, filelist=platform.src_files, file_suffix=platform.arch, prefix=platform.prefix, suffix=platform.suffix)\ndef build_target(platform, platform_headers):\n    def xcrun_cmd(cmd):\n        return 'xcrun -sdk %s %s -arch %s' % (platform.sdk, cmd, platform.arch)",
+        "detail": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "documentation": {}
+    },
+    {
+        "label": "copy_src_platform_files",
+        "kind": 2,
+        "importPath": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "description": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "peekOfCode": "def copy_src_platform_files(platform):\n    src_dir = os.path.join('src', platform.src_dir)\n    dst_dir = os.path.join(platform.directory, 'src', platform.src_dir)\n    copy_files(src_dir, dst_dir, filelist=platform.src_files, file_suffix=platform.arch, prefix=platform.prefix, suffix=platform.suffix)\ndef build_target(platform, platform_headers):\n    def xcrun_cmd(cmd):\n        return 'xcrun -sdk %s %s -arch %s' % (platform.sdk, cmd, platform.arch)\n    tag='%s-%s' % (platform.sdk, platform.arch)\n    build_dir = 'build_%s' % tag\n    mkdir_p(build_dir)",
+        "detail": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "documentation": {}
+    },
+    {
+        "label": "build_target",
+        "kind": 2,
+        "importPath": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "description": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "peekOfCode": "def build_target(platform, platform_headers):\n    def xcrun_cmd(cmd):\n        return 'xcrun -sdk %s %s -arch %s' % (platform.sdk, cmd, platform.arch)\n    tag='%s-%s' % (platform.sdk, platform.arch)\n    build_dir = 'build_%s' % tag\n    mkdir_p(build_dir)\n    env = dict(CC=xcrun_cmd('clang'),\n               LD=xcrun_cmd('ld'),\n               CFLAGS='%s -fembed-bitcode' % (platform.version_min))\n    working_dir = os.getcwd()",
+        "detail": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "documentation": {}
+    },
+    {
+        "label": "generate_source_and_headers",
+        "kind": 2,
+        "importPath": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "description": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "peekOfCode": "def generate_source_and_headers(generate_osx=True, generate_ios=True):\n    copy_files('src', 'darwin_common/src', pattern='*.c')\n    copy_files('include', 'darwin_common/include', pattern='*.h')\n    if generate_ios:\n        copy_src_platform_files(simulator_platform)\n        copy_src_platform_files(simulator64_platform)\n        copy_src_platform_files(device_platform)\n        copy_src_platform_files(device64_platform)\n    if generate_osx:\n        copy_src_platform_files(desktop64_platform)",
+        "detail": "vendor.bundle.ruby.3.4.0.gems.ffi-1.15.1.ext.ffi_c.libffi.generate-darwin-source-and-headers",
+        "documentation": {}
+    }
+]
