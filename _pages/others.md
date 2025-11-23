@@ -14,7 +14,3 @@
 
 - **Teaching Assistant**, MTH 103 College Algebra, Michigan State University, _Fall 2024_.
 - **Teaching Assistant**, CSE 102 Algorithmic Thinking and Programming, Michigan State University, _Fall 2023_.
-
-### 🎵 Beyond Research
-
-I enjoy ⚽ soccer, 🎮 League of Legends, 🎧 pop/rap music, 📚 books, and 🧰 building side projects and tools that make research a bit more playful.
