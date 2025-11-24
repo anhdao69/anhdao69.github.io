@@ -2,25 +2,25 @@
 
 ## 📷🤖 Computer Vision, Embodied AI & Visual LLMs
 
-<div class="paper-box"><div class="paper-box-image"><div><div class="badge">CVPR 2026 (under review)</div><img src="./images/forces_cvpr2026.png" alt="Beyond Motion Pattern" width="100%"></div></div>
+<div class="paper-box"><div class="paper-box-image"><div><div class="badge">(Under review)</div><img src="./images/forces_cvpr2026.png" alt="Beyond Motion Pattern" width="100%"></div></div>
 <div class="paper-box-text" markdown="1">
 
 **Beyond Motion Pattern: An Empirical Study of Physical Forces for Human Motion Understanding**  
 **Anh Dao**\*, Manh Tran\*, Yufei Zhang, Xiaoming Liu, Zijun Cui.  
-_CVPR 2026, under review._
+_Under review._
 
 [**Preprint (coming soon)**]()
 
 </div>
 </div>
 
-<div class="paper-box"><div class="paper-box-image"><div><div class="badge">CVPR 2026 (under review)</div><img src="./images/industrynav_cvpr2026.png" alt="IndustryNav" width="100%"></div></div>
+<div class="paper-box"><div class="paper-box-image"><div><div class="badge">(Under review)</div><img src="./images/industrynav_cvpr2026.png" alt="IndustryNav" width="100%"></div></div>
 <div class="paper-box-text" markdown="1">
 
 **IndustryNav: Exploring Spatial Reasoning of Embodied Agents in Dynamic Industrial Navigation**  
 Yifan Li\*, Lichi Li\*, **Anh Dao\***, Xinyu Zhou, Yicheng Qiao, Zheda Mai, Daeun Lee,  
 Zichen Chen, Zhen Tan, Mohit Bansal, Yu Kong.  
-_CVPR 2026, under review._
+_Under review._
 
 [**Paper**](https://arxiv.org/abs/2511.17384) ·
 [**Project**](https://anhdao69.github.io/IndustryNav_website)
