@@ -22,7 +22,7 @@ Yifan Li\*, Lichi Li\*, **Anh Dao\***, Xinyu Zhou, Yicheng Qiao, Zheda Mai, Daeu
 Zichen Chen, Zhen Tan, Mohit Bansal, Yu Kong.  
 _CVPR 2026, under review._
 
-[**Preprint (coming soon)**]() ·
+[**Paper**](https://arxiv.org/abs/2511.17384) ·
 [**Project**](https://anhdao69.github.io/IndustryNav_website)
 
 </div>
