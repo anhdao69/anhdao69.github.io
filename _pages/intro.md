@@ -18,7 +18,5 @@ To achieve this, my work tackles three fundamental challenges at the intersectio
 1.  **Understanding 🧭:** How can we infuse VLMs with physical commonsense and rich 3D spatial understanding of their environments?
 2.  **Reasoning 🧠:** How can we enable agents to solve complex, long-horizon tasks that require memory, planning, and causal reasoning?
 3.  **Efficiency ⚡️:** How can we design efficient VLM/VLA models (e.g., via token reduction and optimized inference) that are fast and practical enough for real-world deployment?
-
-I will be applying for **Ph.D. programs starting in Fall 2026** and am actively looking for opportunities to work with faculty on these and related problems in vision, robotics, and multimodal LLMs.
-
+4.  
 I am always open to collaboration—if you find overlapping interests, feel free to reach out! 🤝
