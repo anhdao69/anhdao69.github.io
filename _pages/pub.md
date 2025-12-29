@@ -9,7 +9,7 @@
 **Anh Dao**\*, Manh Tran\*, Yufei Zhang, Xiaoming Liu, Zijun Cui.  
 _Under review._
 
-[**Preprint (coming soon)**]()
+[**Paper**](https://arxiv.org/pdf/2512.20451)
 
 </div>
 </div>
