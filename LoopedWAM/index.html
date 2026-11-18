@@ -1,0 +1,657 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LoopedWAM: Looped World Action Models for Elastic Inference</title>
+<meta name="description" content="LoopedWAM is a 0.58B-parameter world action model that loops a shared transformer core, and LoopedWAM-E is one elastic checkpoint that runs anywhere between 24.7 and 86.2 ms per query.">
+<meta property="og:title" content="LoopedWAM: Looped World Action Models for Elastic Inference">
+<meta property="og:description" content="A 0.58B world action model with looped depth and one elastic checkpoint for many accuracy-latency budgets.">
+<meta property="og:image" content="static/images/teaser-new.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='22' fill='none' stroke='%23e8622c' stroke-width='8'/><path d='M32 10a22 22 0 0 1 22 22' fill='none' stroke='%232a6fdb' stroke-width='8'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<style>
+:root{
+  --bg:#ffffff; --bg-soft:#f6f7f9; --bg-tint:#eef4fc;
+  --ink:#111418; --ink-2:#3d4450; --ink-3:#6b7280; --line:#e4e7ec;
+  --blue:#2a6fdb; --blue-ink:#1d4fa3; --orange:#e8622c; --orange-ink:#b4441a; --gray:#8a8f98;
+  --radius:14px; --maxw:1080px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+img,video{max-width:100%;display:block}
+a{color:var(--blue-ink);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px}
+.narrow{max-width:820px;margin:0 auto}
+
+/* nav */
+nav.top{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.88);backdrop-filter:saturate(1.6) blur(10px);border-bottom:1px solid var(--line)}
+nav.top .wrap{display:flex;align-items:center;gap:22px;height:54px;overflow-x:auto;scrollbar-width:none}
+nav.top .brand{font-weight:800;letter-spacing:-.01em;color:var(--ink);white-space:nowrap}
+nav.top .brand span{color:var(--orange)}
+nav.top a.l{color:var(--ink-2);font-size:14px;font-weight:500;white-space:nowrap}
+nav.top a.l:hover{color:var(--ink);text-decoration:none}
+
+/* hero */
+header.hero{padding:56px 0 28px;text-align:center}
+.venue{display:inline-block;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);margin-bottom:14px}
+h1.title{font-size:clamp(30px,5vw,52px);line-height:1.1;letter-spacing:-.025em;margin:0 auto 10px;max-width:900px;font-weight:800}
+h1.title .m{background:linear-gradient(90deg,var(--orange),#d9480f 40%,var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent}
+.subtitle{font-size:clamp(17px,2.2vw,22px);color:var(--ink-2);margin:0 auto 26px;font-weight:500}
+.authors{font-size:18px;margin:0 auto 6px;max-width:820px}
+.authors span{display:inline-block;margin:0 10px;white-space:nowrap;font-weight:500}
+.authors sup{color:var(--ink-3);font-weight:500}
+.affil{display:flex;align-items:center;justify-content:center;gap:12px;color:var(--ink-2);margin:10px 0 24px;flex-wrap:wrap}
+.affil img{height:56px;width:56px}
+.uni{display:inline-flex;align-items:center;gap:12px;color:var(--ink);font-size:17px;font-weight:600}
+.uni:hover{text-decoration:none}
+.uni sup{color:var(--ink-3);font-weight:500;margin-right:2px}
+.btns{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;background:var(--ink);color:#fff;font-weight:600;font-size:15px;border:1px solid var(--ink);transition:transform .15s ease,background .15s}
+.btn:hover{text-decoration:none;transform:translateY(-1px);background:#2a2f36}
+.btn svg{width:18px;height:18px;fill:currentColor}
+.btn.ghost{background:#fff;color:var(--ink);border-color:var(--line)}
+.btn.ghost:hover{background:var(--bg-soft)}
+.btn.soon{background:#fff;color:var(--ink-3);border-color:var(--line);cursor:default}
+.btn.soon:hover{transform:none}
+.btn small{font-weight:500;font-size:12px;opacity:.8}
+
+/* hero video */
+.hero-media{margin:34px auto 0;max-width:900px;position:relative;border-radius:var(--radius);overflow:hidden;background:#000;box-shadow:0 20px 50px -20px rgba(16,24,40,.35)}
+.hero-media video{width:100%;aspect-ratio:4/3;object-fit:cover}
+.hero-cap{position:absolute;left:16px;bottom:16px;right:16px;display:flex;justify-content:space-between;align-items:flex-end;gap:10px;pointer-events:none}
+.pill{background:rgba(17,20,24,.72);color:#fff;font-size:14px;font-weight:600;padding:7px 12px;border-radius:999px;backdrop-filter:blur(4px)}
+.pill.q{font-style:italic;font-weight:500}
+.hero-note{font-size:13px;color:var(--ink-3);margin-top:10px;text-align:center}
+
+/* stat strip */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:42px auto 0}
+.stat{background:var(--bg-soft);border:1px solid var(--line);border-radius:var(--radius);padding:18px 18px 16px;text-align:left}
+.stat b{display:block;font-size:30px;line-height:1.1;letter-spacing:-.02em;font-weight:800}
+.stat span{color:var(--ink-2);font-size:14px;line-height:1.4;display:block;margin-top:6px}
+.stat.o b{color:var(--orange-ink)} .stat.b b{color:var(--blue-ink)}
+
+/* sections */
+section{padding:64px 0;border-top:1px solid var(--line)}
+section.alt{background:var(--bg-soft)}
+.eyebrow{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--orange-ink);margin:0 0 8px}
+h2{font-size:clamp(26px,3.4vw,36px);line-height:1.15;letter-spacing:-.02em;margin:0 0 14px;font-weight:800}
+h3{font-size:20px;margin:0 0 8px;letter-spacing:-.01em}
+.lead{font-size:18px;color:var(--ink-2);margin:0 0 26px;max-width:780px}
+p{margin:0 0 14px}
+.abstract{font-size:17px;color:var(--ink-2);text-align:justify;hyphens:auto}
+figure{margin:28px 0 0}
+figure img{width:100%;border-radius:10px;background:#fff}
+figure.card img{border:1px solid var(--line);padding:14px}
+figcaption{font-size:14px;color:var(--ink-3);margin-top:10px;line-height:1.55}
+figcaption b{color:var(--ink-2)}
+
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:30px}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+.card .n{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--bg-tint);color:var(--blue-ink);font-weight:800;font-size:14px;margin-bottom:12px}
+.card p{color:var(--ink-2);font-size:15px;margin:0}
+.eq{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:15px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:22px 0 0;overflow-x:auto;white-space:nowrap;color:var(--ink)}
+.eq i{font-style:italic} .eq .c1{color:var(--orange-ink)} .eq .c2{color:var(--blue-ink)}
+
+.formula{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:24px 24px 20px;margin:24px 0 0}
+.fhead{font-size:12.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin:0 0 6px}
+.fx{font-size:20px;overflow-x:auto;overflow-y:hidden;padding:6px 0;text-align:center}
+.fx2{font-size:17px;border-top:1px dashed var(--line);margin-top:6px;padding-top:12px}
+.fx .katex-display{margin:.3em 0}
+.fkeys{display:flex;flex-wrap:wrap;gap:10px 22px;justify-content:center;font-size:14px;color:var(--ink-2);margin-top:14px}
+.fkeys .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;vertical-align:0}
+.ftake{margin:14px auto 0;max-width:720px;text-align:center;font-size:14.5px;color:var(--ink-2);background:var(--bg-soft);border-radius:10px;padding:10px 14px}
+
+/* explorer */
+.explorer{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:22px;align-items:stretch;margin-top:8px}
+.chart-box{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:14px 14px 8px;position:relative}
+.chart-box svg{width:100%;height:auto;display:block;overflow:visible}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--ink-2);padding:2px 6px 8px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.legend i.d{border-radius:2px;transform:rotate(45deg)}
+.tip{position:absolute;pointer-events:none;background:#111418;color:#fff;font-size:13px;line-height:1.45;padding:8px 10px;border-radius:8px;opacity:0;transform:translate(-50%,-115%);transition:opacity .1s;white-space:nowrap;z-index:5}
+.tip b{font-weight:700}
+.panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:20px;display:flex;flex-direction:column;gap:16px}
+.ctl label{display:block;font-size:13px;font-weight:600;color:var(--ink-2);margin-bottom:8px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{font:inherit;font-size:14px;font-weight:600;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--ink-2);cursor:pointer;min-width:52px}
+.seg button:hover{border-color:#c9ced6}
+.seg button[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:#fff}
+.readout{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ro{background:var(--bg-soft);border-radius:10px;padding:12px}
+.ro b{display:block;font-size:24px;letter-spacing:-.02em;font-weight:800;line-height:1.15}
+.ro span{font-size:12.5px;color:var(--ink-3)}
+.ro.hi b{color:var(--blue-ink)}
+.cmp{font-size:14px;color:var(--ink-2);background:var(--bg-tint);border-radius:10px;padding:12px 14px;margin:0}
+.depthbar{display:flex;gap:2px;align-items:center;flex-wrap:wrap}
+.depthbar i{width:9px;height:14px;border-radius:2px;background:#9db6dc}
+.depthbar i.core{background:var(--orange)}
+.depthbar small{font-size:12px;color:var(--ink-3);margin-left:6px}
+details.tbl{margin-top:14px;font-size:14px}
+details.tbl summary{cursor:pointer;color:var(--ink-2);font-weight:600}
+
+/* tables */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 16px}
+.tabs button{font:inherit;font-weight:600;font-size:14px;padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--ink-2);cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.tpanel{display:none}.tpanel.on{display:block}
+.tscroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);background:#fff}
+table{border-collapse:collapse;width:100%;font-size:14.5px;font-variant-numeric:tabular-nums}
+th,td{padding:9px 12px;text-align:center;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+thead th{font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-3);font-weight:700;background:var(--bg-soft)}
+tbody tr:last-child td{border-bottom:none}
+tr.grp td{background:#fafbfc;color:var(--ink-3);font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;text-align:left;padding:7px 12px}
+tr.ours td{background:var(--bg-tint)}
+tr.ours td:first-child{font-weight:700;color:var(--blue-ink)}
+tr.main td:first-child{color:var(--orange-ink)}
+td.best{font-weight:800}
+.tnote{font-size:13px;color:var(--ink-3);margin-top:10px}
+
+/* findings */
+.find{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:26px}
+.find .card h3{font-size:17px}
+.big{font-size:28px;font-weight:800;letter-spacing:-.02em;display:block;margin-bottom:4px}
+.big.o{color:var(--orange-ink)}.big.b{color:var(--blue-ink)}
+
+/* real robot */
+.vgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:22px}
+.vcard{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.vcard video{width:100%;aspect-ratio:8/3;object-fit:cover;background:#111}
+.vcard .meta{padding:12px 14px;display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.vcard .meta b{font-size:15px}
+.vcard .meta span{font-size:12.5px;color:var(--ink-3);white-space:nowrap}
+.views{display:grid;grid-template-columns:1fr 1fr;font-size:11.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:700;border-bottom:1px solid var(--line)}
+.views div{padding:6px 14px}
+.btngrid{position:relative;max-width:760px;margin:26px auto 0;border-radius:var(--radius);overflow:hidden;background:#111;border:1px solid var(--line)}
+.btngrid video{width:100%;aspect-ratio:4/3}
+.btngrid .lb{position:absolute;font-size:13.5px;font-weight:700;color:#fff;padding:5px 10px;border-radius:999px}
+.realtable td,.realtable th{padding:9px 14px}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:28px}
+.note{font-size:13.5px;color:var(--ink-3);margin-top:8px}
+
+/* bibtex */
+pre.bib{background:#0f1720;color:#e6edf3;border-radius:var(--radius);padding:20px;overflow-x:auto;font:13.5px/1.6 "JetBrains Mono",ui-monospace,monospace;position:relative;margin:0}
+.copy{position:absolute;top:12px;right:12px;font:600 12.5px Inter,sans-serif;background:#26303b;color:#e6edf3;border:0;border-radius:8px;padding:7px 11px;cursor:pointer}
+.copy:hover{background:#33404e}
+footer{padding:36px 0 50px;border-top:1px solid var(--line);color:var(--ink-3);font-size:13.5px;text-align:center}
+
+@media (max-width:900px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .cards{grid-template-columns:1fr}
+  .explorer{grid-template-columns:1fr}
+  .find,.split{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  .wrap{padding:0 16px}
+  header.hero{padding-top:36px}
+  .authors span{margin:0 6px}
+  .vgrid{grid-template-columns:1fr}
+  .fx{font-size:15px}.fx2{font-size:14px}.formula{padding:18px 12px 16px}
+  .abstract{text-align:left;hyphens:manual}
+  section{padding:48px 0}
+  .stat b{font-size:24px}
+  .btngrid .lb{font-size:11px;padding:3px 7px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn{transition:none}}
+</style>
+</head>
+<body>
+
+<nav class="top" aria-label="Sections">
+  <div class="wrap">
+    <a class="brand" href="#">Looped<span>WAM</span></a>
+    <a class="l" href="#abstract">Abstract</a>
+    <a class="l" href="#method">Method</a>
+    <a class="l" href="#elastic">Elastic inference</a>
+    <a class="l" href="#results">Results</a>
+    <a class="l" href="#real">Real robot</a>
+    <a class="l" href="#bibtex">BibTeX</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <h1 class="title"><span class="m">LoopedWAM</span>: Looped World Action Models for Elastic Inference</h1>
+    <p class="subtitle">Store 12 blocks, run 30 layers, and choose the depth at test time.</p>
+    <p class="authors">
+      <span>Anh Dao<sup>1</sup></span>
+      <span>Xinxin Liu<sup>1</sup></span>
+      <span>Hang Yu<sup>1</sup></span>
+      <span>Jeffrey A. Chan Santiago<sup>1</sup></span>
+      <span>Yuzhang Shang<sup>1</sup></span>
+    </p>
+    <div class="affil">
+      <a class="uni" href="https://www.ucf.edu"><img src="static/images/ucf_seal.webp" alt="" width="56" height="56"><span><sup>1</sup>University of Central Florida</span></a>
+    </div>
+    <div class="btns">
+      <span class="btn soon" title="The paper link will be added when it is public"><svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6zM14 3.5V8h4.5"/></svg>Paper <small>coming soon</small></span>
+      <span class="btn soon" title="The code link will be added when it is public"><svg viewBox="0 0 24 24"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.4 11.4 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5z"/></svg>Code <small>coming soon</small></span>
+      <span class="btn soon" title="The model link will be added when it is public"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm-3.5 7a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm7 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM7 14h10a5 5 0 0 1-10 0z"/></svg>Models <small>coming soon</small></span>
+      <a class="btn ghost" href="#real"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Robot videos</a>
+    </div>
+
+    <div class="hero-media">
+      <video id="heroVid" src="static/videos/highlight.mp4" poster="static/videos/highlight.jpg" autoplay muted loop playsinline preload="auto" aria-label="LoopedWAM on a real AgileX PiPER arm, four tasks"></video>
+      <div class="hero-cap"><span class="pill q" id="heroTask">"pick up the can and place it on the plate"</span></div>
+    </div>
+    <p class="hero-note">LoopedWAM controlling a real AgileX PiPER arm from a front and a wrist camera. Front view shown; uncut episodes from one evaluation session.</p>
+
+    <div class="stats">
+      <div class="stat o"><b>0.58B</b><span>policy parameters, 2.4&times; fewer than an equally deep dense model</span></div>
+      <div class="stat"><b>91.9%</b><span>RoboTwin 2.0, on par with the ~6B Fast-WAM (91.8%)</span></div>
+      <div class="stat b"><b>24.7&ndash;86.2 ms</b><span>nine latency budgets from <em>one</em> LoopedWAM-E checkpoint</span></div>
+      <div class="stat"><b>7.4&times;</b><span>less peak GPU memory than Fast-WAM (2.05 vs 15.25 GB)</span></div>
+    </div>
+  </div>
+</header>
+
+<section id="abstract">
+  <div class="wrap narrow">
+    <p class="eyebrow">Abstract</p>
+    <h2>Compact world action models with depth you can choose at test time</h2>
+    <p class="abstract">World action models (WAMs) couple generative video modeling with robotic action prediction but typically require large video and action transformers, limiting deployment efficiency. We present <b>LoopedWAM</b>, a compact WAM that recurrently applies a shared six-block core in each expert, executing 30 transformer layers while storing only 12 blocks per expert. To account for their asymmetric inference costs, the video and action experts can operate at different depths: visual features are computed once per query, whereas action computation repeats at every sampling step. We further propose <b>elastic self-distillation</b>, which trains a single elastic checkpoint, <b>LoopedWAM-E</b>, across action-depth and sampling-step budgets. With only 0.58B policy parameters and no robot pretraining, LoopedWAM achieves 96.1% success on LIBERO, 91.9% on RoboTwin&nbsp;2.0, and 52.2% on RoboCasa-GR1, while using 7.4&times; less peak GPU memory than Fast-WAM under matched inference measurements. On LIBERO, LoopedWAM-E achieves 96.0% success in 27.6&nbsp;ms or 95.2% in 24.7&nbsp;ms on an H100, providing multiple accuracy&ndash;latency operating points from a single checkpoint; with two sampling steps and four action loops, it stays within 0.5 points of LoopedWAM on all three benchmarks. Ablations demonstrate that weight-shared depth preserves competitive performance, while aggressive action-depth reduction requires explicit budget-aware training. On a real AgileX PiPER arm, LoopedWAM completes four manipulation tasks from 100 demonstrations each.</p>
+    <figure>
+      <a href="static/images/teaser-new.png" title="Open full size"><img src="static/images/teaser-new.png" alt="Three panels: (a) stored versus executed layers, (b) RoboTwin 2.0 success versus parameters, (c) LIBERO success versus latency" loading="lazy"></a>
+      <figcaption><b>LoopedWAM is small, fast, and elastic.</b> (a) Each expert stores 12 blocks and loops its shared 6-block core <i>K</i> times, reaching the 30-layer depth of its dense donor with 2.4&times; fewer parameters. (b) RoboTwin&nbsp;2.0 success against parameters, as reported by each paper. (c) LIBERO success against latency on one H100 for every setting of LoopedWAM-E; at (<i>K<sub>a</sub></i>,&nbsp;<i>N</i>)&nbsp;=&nbsp;(2,&nbsp;2) it is 3.9&times; faster than Fast-WAM.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="method" class="alt">
+  <div class="wrap">
+    <p class="eyebrow">Method</p>
+    <h2>Separate what is stored from what is executed</h2>
+    <p class="lead">A query runs the video expert once and the action expert once per sampling step. Latency follows the number of blocks executed in sequence; memory follows the number of blocks stored. LoopedWAM controls the two independently.</p>
+    <figure class="card">
+      <a href="static/images/method.png" title="Open full size"><img src="static/images/method.png" alt="Method overview: looped video and action experts with late alignment, and elastic self-distillation from a frozen teacher" loading="lazy"></a>
+      <figcaption><b>(a) LoopedWAM.</b> Each expert stores a prelude, a shared core, and a coda, and loops the core <i>K<sub>v</sub></i> times in the video expert and <i>K<sub>a</sub></i> times in the action expert. The video expert encodes the current frame once per query and caches its keys and values; late alignment lets every action loop read the deepest visual features. <b>(b) LoopedWAM-E.</b> One student learns every setting (<i>K<sub>a</sub></i>,&nbsp;<i>N</i>); each macro step is matched to the frozen teacher's fine Euler map started from the student's <em>own</em> state.</figcaption>
+    </figure>
+    <div class="cards">
+      <div class="card"><div class="n">1</div><h3>Looped experts</h3><p>A 3-block prelude, a 6-block shared core, and a 3-block coda, copied from a Wan2.1 video model. Looping the core four times recovers the donor's 30 layers with 12 stored blocks: <b>0.58B</b> parameters in total.</p></div>
+      <div class="card"><div class="n">2</div><h3>Decoupled depth, late alignment</h3><p>Video depth is paid once per query, action depth at every sampling step, so the two experts loop a different number of times. Action loop <i>r</i> attends to video loop <i>&sigma;(r)&nbsp;=&nbsp;max(1,&nbsp;K<sub>v</sub>&minus;K<sub>a</sub>+r)</i>, so even one action loop sees the deepest visual features.</p></div>
+      <div class="card"><div class="n">3</div><h3>Elastic self-distillation</h3><p>One student, LoopedWAM-E, is trained for <i>K<sub>a</sub></i>&nbsp;&isin;&nbsp;{1,&nbsp;2,&nbsp;4} action loops and <i>N</i>&nbsp;&isin;&nbsp;{2,&nbsp;5,&nbsp;10} sampling steps. Targets come from the teacher started at the student's own intermediate states, so the student learns to correct its own errors.</p></div>
+    </div>
+    <div class="formula" role="group" aria-label="Cost of one policy query">
+      <p class="fhead">Cost of one policy query</p>
+      <div class="fx" id="fxMain">T(K<sub>v</sub>, K<sub>a</sub>, N) &asymp; T<sub>0</sub> + L(K<sub>v</sub>)&middot;t<sub>v</sub> + N&middot;L(K<sub>a</sub>)&middot;t<sub>a</sub></div>
+      <div class="fx fx2" id="fxDepth">L(K) = 3 + 6K + 3</div>
+      <div class="fkeys">
+        <div><span class="dot" style="background:#9aa1ab"></span><b>T<sub>0</sub></b> fixed cost: encoding and I/O</div>
+        <div><span class="dot" style="background:var(--orange)"></span><b>Video depth</b> paid <b>once</b> per query</div>
+        <div><span class="dot" style="background:var(--blue)"></span><b>Action depth</b> paid at each of the <b>N</b> sampling steps</div>
+      </div>
+      <p class="ftake">So LoopedWAM-E keeps the video expert at full depth (<i>K<sub>v</sub></i>&nbsp;=&nbsp;4) and makes only the action loops <i>K<sub>a</sub></i> and the steps <i>N</i> adjustable.</p>
+    </div>
+  </div>
+</section>
+
+<section id="elastic">
+  <div class="wrap">
+    <p class="eyebrow">Elastic inference</p>
+    <h2>One checkpoint, nine operating points</h2>
+    <p class="lead">Pick the number of action loops and sampling steps at deployment. Every setting below is the same LoopedWAM-E weights, evaluated on LIBERO (6,000 episodes each) with latency on one H100 at batch size 1.</p>
+    <div class="explorer">
+      <div class="chart-box" id="chartBox">
+        <div class="legend" aria-hidden="true">
+          <span><i style="background:var(--blue)"></i>LoopedWAM-E (one checkpoint)</span>
+          <span><i class="d" style="background:var(--orange)"></i>LoopedWAM teacher (<i>K<sub>a</sub></i>=4, <i>N</i>=10)</span>
+          <span><i style="background:var(--gray)"></i>Fast-WAM* (~6B, <i>N</i>=10)</span>
+        </div>
+        <svg id="chart" viewBox="0 0 640 400" role="img" aria-labelledby="chartTitle chartDesc">
+          <title id="chartTitle">LIBERO success versus latency</title>
+          <desc id="chartDesc">Nine LoopedWAM-E settings span 24.7 to 86.2 milliseconds at 95.2 to 96.2 percent success; Fast-WAM is at 107.5 milliseconds and 96.6 percent.</desc>
+        </svg>
+        <div class="tip" id="tip"></div>
+      </div>
+      <div class="panel">
+        <div class="ctl"><label id="lblK">Action loops <i>K<sub>a</sub></i></label><div class="seg" role="group" aria-labelledby="lblK" id="segK"></div></div>
+        <div class="ctl"><label id="lblN">Sampling steps <i>N</i></label><div class="seg" role="group" aria-labelledby="lblN" id="segN"></div></div>
+        <div class="ctl"><label>Action blocks per sampling step</label><div class="depthbar" id="depth"></div></div>
+        <div class="readout" aria-live="polite">
+          <div class="ro hi"><b id="roS">96.0%</b><span>LIBERO success</span></div>
+          <div class="ro hi"><b id="roL">27.6 ms</b><span>latency per query</span></div>
+          <div class="ro"><b id="roC">36</b><span>action-block calls per query</span></div>
+          <div class="ro"><b id="roX">3.9&times;</b><span>faster than Fast-WAM*</span></div>
+        </div>
+        <p class="cmp" id="cmp"></p>
+      </div>
+    </div>
+    <details class="tbl">
+      <summary>Show all nine settings as a table</summary>
+      <div class="tscroll" style="margin-top:10px"><table id="nineTable"><thead><tr><th><i>K<sub>a</sub></i></th><th><i>N</i></th><th>Block calls</th><th>Latency (ms)</th><th>Mem. (GB)</th><th>Spatial</th><th>Object</th><th>Goal</th><th>Long</th><th>Avg.</th></tr></thead><tbody></tbody></table></div>
+      <p class="tnote">*Fast-WAM re-evaluated by us with the released checkpoint under the same protocol.</p>
+    </details>
+
+    <figure class="card" style="margin-top:36px">
+      <a href="static/images/elastic.png" title="Open full size"><img src="static/images/elastic.png" alt="Three plots: success versus action loops, one checkpoint versus fixed-depth models, latency versus executed blocks" loading="lazy"></a>
+      <figcaption><b>Depth must be trained to be removable</b> (LIBERO, shorter ablation schedule). (a) Running the fixed 4/4 model with fewer action loops collapses its success (12.3% at one loop), while the elastic student holds every loop count, including ones it never trained on. (b) The elastic checkpoint dominates every separately trained fixed-depth model and Dense-12. (c) Latency is linear in executed action blocks (<i>R</i><sup>2</sup>&nbsp;=&nbsp;0.999), with a 19.8&nbsp;ms per-query floor.</figcaption>
+    </figure>
+    <div class="find">
+      <div class="card"><span class="big b">+81.4 pts</span><h3>Elastic training rescues one-loop inference</h3><p>Truncating the trained model to a single action loop gives 12.3% on LIBERO; the elastic student keeps 93.7% at the same setting.</p></div>
+      <div class="card"><span class="big o">60 vs 60</span><h3>At equal compute, depth beats steps</h3><p>With 60 action-block calls each, (<i>K<sub>a</sub></i>,&nbsp;<i>N</i>)&nbsp;=&nbsp;(4,&nbsp;2) beats (1,&nbsp;5) by 0.4, 2.1, and 5.0 points on LIBERO, RoboTwin&nbsp;2.0, and RoboCasa-GR1.</p></div>
+      <div class="card"><span class="big b">&le;0.5 pts</span><h3>One recipe, three benchmarks</h3><p>At two steps and four action loops, a fifth of the teacher's action-block calls, the student stays within 0.5 points of its teacher on all three benchmarks.</p></div>
+      <div class="card"><span class="big o">87%</span><h3>Looping recovers most of the benefit of depth</h3><p>Looping 12 stored blocks to 30 layers closes 87% of the LIBERO gap between Dense-12 (90.0%) and Dense-30 (95.6%), without adding parameters.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="results" class="alt">
+  <div class="wrap">
+    <p class="eyebrow">Benchmarks</p>
+    <h2>Competitive with world action models ten times larger</h2>
+    <p class="lead">No robot pretraining. Prior results are taken from their papers unless marked with *, which we re-evaluated with the released checkpoints under our protocol.</p>
+    <div class="tabs" role="tablist" aria-label="Benchmark">
+      <button role="tab" aria-selected="true" aria-controls="t-libero" id="tb-libero">LIBERO</button>
+      <button role="tab" aria-selected="false" aria-controls="t-rt" id="tb-rt">RoboTwin 2.0</button>
+      <button role="tab" aria-selected="false" aria-controls="t-gr1" id="tb-gr1">RoboCasa-GR1</button>
+      <button role="tab" aria-selected="false" aria-controls="t-eff" id="tb-eff">Efficiency</button>
+      <button role="tab" aria-selected="false" aria-controls="t-abl" id="tb-abl">Ablation: depth</button>
+    </div>
+
+    <div class="tpanel on" role="tabpanel" id="t-libero" aria-labelledby="tb-libero">
+      <div class="tscroll"><table>
+        <thead><tr><th>Method</th><th>Params</th><th>Robot PT</th><th>Spatial</th><th>Object</th><th>Goal</th><th>Long</th><th>Avg.</th></tr></thead>
+        <tbody>
+          <tr class="grp"><td colspan="8">Vision-language-action models</td></tr>
+          <tr><td>OpenVLA-OFT</td><td>7B</td><td>&#10003;</td><td>97.6</td><td>98.4</td><td>97.9</td><td>94.5</td><td>97.1</td></tr>
+          <tr><td>&pi;<sub>0</sub></td><td>3.3B</td><td>&#10003;</td><td>96.8</td><td>98.8</td><td>95.8</td><td>85.2</td><td>94.2</td></tr>
+          <tr><td>&pi;<sub>0.5</sub></td><td>3B</td><td>&#10003;</td><td>98.8</td><td>98.2</td><td>98.0</td><td>92.4</td><td>96.9</td></tr>
+          <tr><td>GR00T-N1.6</td><td>3.3B</td><td>&#10003;</td><td>97.7</td><td>98.5</td><td>97.5</td><td>94.4</td><td>97.0</td></tr>
+          <tr><td>SmolVLA</td><td>0.45B</td><td>&#10007;</td><td>90.0</td><td>96.0</td><td>92.0</td><td>71.0</td><td>87.3</td></tr>
+          <tr><td>RD-VLA</td><td>0.5B</td><td>&ndash;</td><td>92.0</td><td>99.0</td><td>96.0</td><td>84.8</td><td>93.0</td></tr>
+          <tr class="grp"><td colspan="8">World action models</td></tr>
+          <tr><td>Motus</td><td>8B</td><td>&#10003;</td><td>96.8</td><td>99.8</td><td>96.6</td><td>97.6</td><td>97.7</td></tr>
+          <tr><td>LingBot-VA</td><td>5.3B</td><td>&#10003;</td><td>98.5</td><td>99.6</td><td>97.2</td><td>98.5</td><td>98.5</td></tr>
+          <tr><td>Cosmos Policy</td><td>2B</td><td>&#10007;</td><td>98.1</td><td>100.0</td><td>98.2</td><td>97.6</td><td>98.5</td></tr>
+          <tr><td>LaWAM</td><td>2.3B</td><td>&#10003;</td><td>99.4</td><td>99.6</td><td>98.4</td><td>97.0</td><td>98.6</td></tr>
+          <tr><td>LiLa-WAM</td><td>0.5B</td><td>&#10007;</td><td>98.0</td><td>98.8</td><td>97.2</td><td>94.2</td><td>97.1</td></tr>
+          <tr><td>Light-WAM*</td><td>1.9B</td><td>&#10007;</td><td>96.7</td><td>98.9</td><td>96.6</td><td>90.9</td><td>95.8</td></tr>
+          <tr><td>Fast-WAM*</td><td>~6B</td><td>&#10007;</td><td>97.5</td><td>99.3</td><td>96.3</td><td>93.5</td><td>96.6</td></tr>
+          <tr><td>Faster-WAM*</td><td>~6.3B</td><td>&#10007;</td><td>99.0</td><td>99.6</td><td>98.2</td><td>98.1</td><td>98.7</td></tr>
+          <tr class="grp"><td colspan="8">Ours</td></tr>
+          <tr class="ours"><td>LoopedWAM</td><td>0.58B</td><td>&#10007;</td><td>96.9</td><td>99.5</td><td>97.9</td><td>90.1</td><td class="best">96.1</td></tr>
+          <tr class="ours"><td>LoopedWAM-E (<i>K<sub>a</sub></i>=4, <i>N</i>=2)</td><td>0.58B</td><td>&#10007;</td><td>97.2</td><td>99.3</td><td>97.5</td><td>88.5</td><td>95.6</td></tr>
+          <tr class="ours"><td>LoopedWAM-E (<i>K<sub>a</sub></i>=2, <i>N</i>=2)</td><td>0.58B</td><td>&#10007;</td><td>97.8</td><td>99.1</td><td>97.8</td><td>89.2</td><td>96.0</td></tr>
+        </tbody></table></div>
+      <p class="tnote">Our models and * rows: 40 tasks &times; 50 initial states &times; 3 seeds = 6,000 episodes per model. Params exclude the frozen VAE and text encoder. Robot PT: pretraining on robot data.</p>
+    </div>
+
+    <div class="tpanel" role="tabpanel" id="t-rt" aria-labelledby="tb-rt">
+      <div class="tscroll"><table>
+        <thead><tr><th>Method</th><th>Params</th><th>Robot PT</th><th>Clean</th><th>Randomized</th><th>Avg.</th></tr></thead>
+        <tbody>
+          <tr class="grp"><td colspan="6">Vision-language-action models</td></tr>
+          <tr><td>&pi;<sub>0</sub></td><td>3.3B</td><td>&#10003;</td><td>65.9</td><td>58.4</td><td>62.2</td></tr>
+          <tr><td>&pi;<sub>0.5</sub></td><td>3B</td><td>&#10003;</td><td>82.7</td><td>76.8</td><td>79.8</td></tr>
+          <tr><td>X-VLA</td><td>0.9B</td><td>&#10003;</td><td>72.8</td><td>72.8</td><td>72.8</td></tr>
+          <tr class="grp"><td colspan="6">World action models</td></tr>
+          <tr><td>Motus</td><td>8B</td><td>&#10003;</td><td>88.7</td><td>87.0</td><td>87.8</td></tr>
+          <tr><td>LingBot-VA</td><td>5.3B</td><td>&#10003;</td><td>92.9</td><td>91.6</td><td>92.2</td></tr>
+          <tr><td>AHA-WAM</td><td>7.2B</td><td>&#10007;</td><td>93.4</td><td>92.2</td><td>92.8</td></tr>
+          <tr><td>Fast-WAM</td><td>~6B</td><td>&#10007;</td><td>91.9</td><td>91.8</td><td>91.8</td></tr>
+          <tr><td>Faster-WAM</td><td>~6.3B</td><td>&#10007;</td><td>92.8</td><td>92.3</td><td>92.6</td></tr>
+          <tr><td>LaWAM</td><td>2.3B</td><td>&#10003;</td><td>92.6</td><td>89.8</td><td>91.2</td></tr>
+          <tr><td>Efficient-WAM</td><td>1B</td><td>&#10007;</td><td>86.7</td><td>85.7</td><td>86.2</td></tr>
+          <tr><td>Light-WAM</td><td>1.9B</td><td>&#10007;</td><td>76.4</td><td>76.3</td><td>76.4</td></tr>
+          <tr><td>LiLa-WAM</td><td>0.5B</td><td>&#10007;</td><td>90.5</td><td>89.0</td><td>89.8</td></tr>
+          <tr class="grp"><td colspan="6">Ours</td></tr>
+          <tr class="ours"><td>LoopedWAM</td><td>0.58B</td><td>&#10007;</td><td>92.1</td><td>91.7</td><td class="best">91.9</td></tr>
+          <tr class="ours"><td>LoopedWAM-E (<i>K<sub>a</sub></i>=4, <i>N</i>=2)</td><td>0.58B</td><td>&#10007;</td><td>91.3</td><td>91.6</td><td>91.5</td></tr>
+          <tr class="ours"><td>LoopedWAM-E (<i>K<sub>a</sub></i>=2, <i>N</i>=2)</td><td>0.58B</td><td>&#10007;</td><td>90.6</td><td>90.6</td><td>90.6</td></tr>
+        </tbody></table></div>
+      <p class="tnote">50 bimanual tasks, one model, 100 episodes per task in each setting. LoopedWAM is the best model below 2B parameters.</p>
+    </div>
+
+    <div class="tpanel" role="tabpanel" id="t-gr1" aria-labelledby="tb-gr1">
+      <div class="tscroll"><table>
+        <thead><tr><th>Method</th><th>Params</th><th>Avg. success</th></tr></thead>
+        <tbody>
+          <tr><td>GR00T-N1.6</td><td>3.3B</td><td>47.6</td></tr>
+          <tr><td>StarVLA-GR00T</td><td>4B</td><td>47.8</td></tr>
+          <tr><td>Being-H0.7</td><td>3B</td><td>49.2</td></tr>
+          <tr><td>THAW-VLA</td><td>0.8B</td><td>50.5</td></tr>
+          <tr><td>DiT4DiT</td><td>&ndash;</td><td>50.8</td></tr>
+          <tr><td>VP-VLA</td><td>2&times;4B</td><td>53.8</td></tr>
+          <tr><td>TwinBrainVLA</td><td>2&times;4B</td><td>54.6</td></tr>
+          <tr><td>LDA-1B</td><td>1.6B</td><td>55.4</td></tr>
+          <tr><td>ABot-M0</td><td>4B</td><td>58.3</td></tr>
+          <tr><td>ACE-Ego-0</td><td>4B</td><td>72.8</td></tr>
+          <tr class="grp"><td colspan="3">Ours</td></tr>
+          <tr class="ours"><td>LoopedWAM</td><td>0.58B</td><td>52.2</td></tr>
+          <tr class="ours"><td>LoopedWAM-E (<i>K<sub>a</sub></i>=4, <i>N</i>=2)</td><td>0.58B</td><td class="best">52.4</td></tr>
+          <tr class="ours"><td>LoopedWAM-E (<i>K<sub>a</sub></i>=2, <i>N</i>=2)</td><td>0.58B</td><td>51.6</td></tr>
+        </tbody></table></div>
+      <p class="tnote">24 tabletop tasks for a GR1 humanoid (29-D actions), 50 rollouts per task for our models. Rollout counts of prior methods follow their papers (THAW-VLA: 20; LDA-1B: 51; GR00T-N1.6: not stated).</p>
+    </div>
+
+    <div class="tpanel" role="tabpanel" id="t-eff" aria-labelledby="tb-eff">
+      <div class="tscroll"><table>
+        <thead><tr><th>Method</th><th>Params</th><th><i>K<sub>a</sub></i></th><th><i>N</i></th><th>Mem. (GB)</th><th>Latency (ms)</th><th>Speed-up</th><th>LIBERO</th><th>RoboTwin</th></tr></thead>
+        <tbody>
+          <tr class="grp"><td colspan="9">Prior world action models</td></tr>
+          <tr><td>Fast-WAM*</td><td>~6B</td><td>&ndash;</td><td>10</td><td>15.25</td><td>107.5</td><td>1.0&times;</td><td>96.6</td><td>91.8</td></tr>
+          <tr><td>Fast-WAM*</td><td>~6B</td><td>&ndash;</td><td>2</td><td>15.32</td><td>37.1</td><td>2.9&times;</td><td>96.0</td><td>90.1</td></tr>
+          <tr><td>Faster-WAM*</td><td>~6.3B</td><td>&ndash;</td><td>10</td><td>12.76</td><td>72.6</td><td>1.5&times;</td><td>98.7</td><td>92.6</td></tr>
+          <tr><td>Light-WAM*</td><td>1.9B</td><td>&ndash;</td><td>&ndash;</td><td>4.38</td><td>21.8</td><td>4.9&times;</td><td>95.8</td><td>76.4</td></tr>
+          <tr class="grp"><td colspan="9">Dense controls (same Wan2.1 donor)</td></tr>
+          <tr><td>Dense-30</td><td>1.42B</td><td>&ndash;</td><td>10</td><td>3.79</td><td>90.5</td><td>1.2&times;</td><td>96.3</td><td>&ndash;</td></tr>
+          <tr><td>Dense-30-E</td><td>1.42B</td><td>&ndash;</td><td>2</td><td>4.33</td><td>33.9</td><td>3.2&times;</td><td>95.9</td><td>&ndash;</td></tr>
+          <tr><td>Dense-12</td><td>0.58B</td><td>&ndash;</td><td>10</td><td>2.09</td><td>40.8</td><td>2.6&times;</td><td>94.0</td><td>&ndash;</td></tr>
+          <tr class="grp"><td colspan="9">Ours</td></tr>
+          <tr class="ours"><td>LoopedWAM</td><td>0.58B</td><td>4</td><td>10</td><td class="best">2.05</td><td>91.8</td><td>1.2&times;</td><td>96.1</td><td>91.9</td></tr>
+          <tr class="ours"><td>LoopedWAM</td><td>0.58B</td><td>4</td><td>2</td><td>2.09</td><td>35.0</td><td>3.1&times;</td><td>95.3</td><td>91.2</td></tr>
+          <tr class="ours"><td>LoopedWAM-E</td><td>0.58B</td><td>4</td><td>2</td><td>2.78</td><td>33.2</td><td>3.2&times;</td><td>95.6</td><td>91.5</td></tr>
+          <tr class="ours"><td>LoopedWAM-E</td><td>0.58B</td><td>2</td><td>2</td><td>2.68</td><td>27.6</td><td>3.9&times;</td><td>96.0</td><td>90.6</td></tr>
+          <tr class="ours"><td>LoopedWAM-E</td><td>0.58B</td><td>1</td><td>2</td><td>2.58</td><td>24.7</td><td>4.4&times;</td><td>95.2</td><td>89.3</td></tr>
+        </tbody></table></div>
+      <p class="tnote">One shared harness: one H100, batch 1, mean over 500 queries, from raw observation to actions. Mem.: peak GPU memory (VAE included, text encoder not). Speed-up relative to Fast-WAM* at its native 10 steps. Light-WAM predicts the chunk in one forward pass.</p>
+    </div>
+
+    <div class="tpanel" role="tabpanel" id="t-abl" aria-labelledby="tb-abl">
+      <div class="tscroll"><table>
+        <thead><tr><th>Model</th><th><i>K<sub>v</sub></i></th><th><i>K<sub>a</sub></i></th><th>Params</th><th>LIBERO</th><th>RoboTwin-10</th></tr></thead>
+        <tbody>
+          <tr><td>Dense-12 (12 layers)</td><td>&ndash;</td><td>&ndash;</td><td>0.58B</td><td>90.0</td><td>77.3</td></tr>
+          <tr><td>LoopedWAM</td><td>1</td><td>4</td><td>0.58B</td><td>91.7</td><td>79.6</td></tr>
+          <tr><td>LoopedWAM</td><td>2</td><td>2</td><td>0.58B</td><td>92.5</td><td>78.9</td></tr>
+          <tr><td>LoopedWAM</td><td>4</td><td>1</td><td>0.58B</td><td>94.0</td><td>81.0</td></tr>
+          <tr><td>LoopedWAM</td><td>4</td><td>2</td><td>0.58B</td><td>94.5</td><td>82.4</td></tr>
+          <tr class="ours"><td>LoopedWAM (default)</td><td>4</td><td>4</td><td>0.58B</td><td>94.9</td><td>81.4</td></tr>
+          <tr><td>Dense-30 (30 layers)</td><td>&ndash;</td><td>&ndash;</td><td>1.42B</td><td>95.6</td><td>83.6</td></tr>
+        </tbody></table></div>
+      <p class="tnote">Shorter ablation schedule (10 LIBERO epochs). At equal parameters, video loops (4/1) beat action loops (1/4) by 2.3 points at 1.8&times; lower latency: video depth is paid once per query.</p>
+    </div>
+  </div>
+</section>
+
+<section id="real">
+  <div class="wrap">
+    <p class="eyebrow">Real world</p>
+    <h2>Four tasks on a real AgileX PiPER arm</h2>
+    <p class="lead">A 6-DoF PiPER with a parallel gripper, observed by a front and a wrist RealSense D435i. We collect 100 teleoperated demonstrations per task and train LoopedWAM from the same Wan2.1 donor. The policy outputs 32 absolute joint targets per query at 15&nbsp;Hz.</p>
+    <figure>
+      <a href="static/images/real.jpg" title="Open full size"><img src="static/images/real.jpg" alt="Real-robot setup with leader and follower arms, and start and end states of the four tasks" loading="lazy"></a>
+      <figcaption><b>Setup and tasks.</b> (a) Follower arm with front and wrist cameras; demonstrations come from teleoperation with a leader arm. (b&ndash;e) Start and end states of the four tasks.</figcaption>
+    </figure>
+
+    <h3 style="margin-top:44px">Language-conditioned pressing</h3>
+    <p style="color:var(--ink-2);margin:0">Same policy, same table: the instruction alone decides which button the arm presses. Played at 2&times; speed.</p>
+    <div class="btngrid">
+      <video class="lazyv" data-src="static/videos/buttons_grid.mp4?v=2" poster="static/videos/buttons_grid.jpg?v=2" muted loop playsinline preload="none" aria-label="Four episodes pressing the blue, red, pink and orange buttons"></video>
+      <span class="lb" style="left:2%;top:3%;background:#1d4ed8">"press the blue button"</span>
+      <span class="lb" style="left:52%;top:3%;background:#b91c1c">"press the red button"</span>
+      <span class="lb" style="left:2%;top:53%;background:#be185d">"press the pink button"</span>
+      <span class="lb" style="left:52%;top:53%;background:#c2410c">"press the orange button"</span>
+    </div>
+
+    <h3 style="margin-top:44px">Rollouts from both cameras</h3>
+    <p style="color:var(--ink-2);margin:0">Uncut successful episodes of LoopedWAM (<i>K<sub>v</sub></i>=<i>K<sub>a</sub></i>=4, <i>N</i>=10), front view left and wrist view right, played at 2&times; speed.</p>
+    <div class="vgrid">
+      <div class="vcard"><div class="views"><div>Front</div><div>Wrist</div></div><video class="lazyv" data-src="static/videos/ep010.mp4" poster="static/videos/ep010.jpg" muted loop playsinline preload="none"></video><div class="meta"><b>"pick up the can and place it on the plate"</b></div></div>
+      <div class="vcard"><div class="views"><div>Front</div><div>Wrist</div></div><video class="lazyv" data-src="static/videos/ep002.mp4" poster="static/videos/ep002.jpg" muted loop playsinline preload="none"></video><div class="meta"><b>"pick up the can and place it on the plate"</b></div></div>
+      <div class="vcard"><div class="views"><div>Front</div><div>Wrist</div></div><video class="lazyv" data-src="static/videos/ep047.mp4" poster="static/videos/ep047.jpg" muted loop playsinline preload="none"></video><div class="meta"><b>"stack the bowls"</b></div></div>
+      <div class="vcard"><div class="views"><div>Front</div><div>Wrist</div></div><video class="lazyv" data-src="static/videos/ep059.mp4" poster="static/videos/ep059.jpg" muted loop playsinline preload="none"></video><div class="meta"><b>"stack the bowls"</b></div></div>
+      <div class="vcard"><div class="views"><div>Front</div><div>Wrist</div></div><video class="lazyv" data-src="static/videos/ep064.mp4" poster="static/videos/ep064.jpg" muted loop playsinline preload="none"></video><div class="meta"><b>"put the spoon in the bowl"</b></div></div>
+      <div class="vcard"><div class="views"><div>Front</div><div>Wrist</div></div><video class="lazyv" data-src="static/videos/ep066.mp4" poster="static/videos/ep066.jpg" muted loop playsinline preload="none"></video><div class="meta"><b>"put the spoon in the bowl"</b></div></div>
+    </div>
+
+    <div class="split">
+      <div>
+        <h3>Success, LoopedWAM</h3>
+        <div class="tscroll"><table class="realtable">
+          <thead><tr><th>Task</th><th>Success</th><th>Rate</th></tr></thead>
+          <tbody>
+            <tr><td>Place can on plate</td><td>17 / 24</td><td>70.8%</td></tr>
+            <tr><td>Press color button</td><td>20 / 22</td><td>90.9%</td></tr>
+            <tr><td>Stack bowls</td><td>11 / 16</td><td>68.8%</td></tr>
+            <tr><td>Put spoon in bowl</td><td>12 / 21</td><td>57.1%</td></tr>
+            <tr class="ours"><td>All</td><td>60 / 83</td><td>72.3%</td></tr>
+          </tbody></table></div>
+        <p class="note">One evaluation session with randomized object placements; every trial starts from the same home pose.</p>
+      </div>
+      <div>
+        <h3>Cost on one GPU</h3>
+        <div class="tscroll"><table class="realtable">
+          <thead><tr><th>Model</th><th>Latency</th><th>Peak mem.</th></tr></thead>
+          <tbody>
+            <tr><td>Fast-WAM* (~6B)</td><td>150 ms</td><td>12.7 GiB</td></tr>
+            <tr class="ours"><td>LoopedWAM</td><td>160 ms</td><td>3.7 GiB</td></tr>
+            <tr class="ours"><td>LoopedWAM-E (4, 2)</td><td>58 ms</td><td>3.3 GiB</td></tr>
+            <tr class="ours"><td>LoopedWAM-E (2, 2)</td><td>46 ms</td><td>3.3 GiB</td></tr>
+          </tbody></table></div>
+        <p class="note">Full robot query (preprocessing and 32-action chunk) on one RTX PRO 6000, batch 1. *Fine-tuned by us on the same demonstrations.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="bibtex" class="alt">
+  <div class="wrap narrow">
+    <p class="eyebrow">Citation</p>
+    <h2>BibTeX</h2>
+    <pre class="bib" id="bib"><button class="copy" id="copyBib" type="button">Copy</button>@article{dao2026loopedwam,
+  title   = {LoopedWAM: Looped World Action Models for Elastic Inference},
+  author  = {Dao, Anh and Liu, Xinxin and Yu, Hang and
+             Chan Santiago, Jeffrey A. and Shang, Yuzhang},
+  year    = {2026}
+}</pre>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">University of Central Florida &middot; Page layout inspired by academic project pages such as <a href="https://nerfies.github.io">Nerfies</a>.</div>
+</footer>
+
+<script>
+(function(){
+  /* ---------- hero caption synced to the highlight reel ---------- */
+  var hv=document.getElementById('heroVid'), ht=document.getElementById('heroTask');
+  var segs=[[0,'"pick up the can and place it on the plate"'],[5.07,'"press the red button"'],[6.93,'"stack the bowls"'],[10.70,'"put the spoon in the bowl"']];
+  hv.addEventListener('timeupdate',function(){var t=hv.currentTime,s=segs[0][1];for(var i=0;i<segs.length;i++){if(t>=segs[i][0])s=segs[i][1];}if(ht.textContent!==s)ht.textContent=s;});
+  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches){hv.removeAttribute('autoplay');hv.pause();hv.controls=true;}
+
+  /* ---------- lazy autoplay videos when visible ---------- */
+  var lv=[].slice.call(document.querySelectorAll('video.lazyv'));
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){var v=e.target;
+      if(e.isIntersecting){if(!v.src){v.src=v.dataset.src;}var p=v.play();if(p&&p.catch)p.catch(function(){v.controls=true;});}
+      else{v.pause();}});},{rootMargin:'120px',threshold:0.25});
+    lv.forEach(function(v){io.observe(v);});
+  } else { lv.forEach(function(v){v.src=v.dataset.src;v.controls=true;}); }
+
+
+  /* ---------- typeset the cost formula ---------- */
+  function tex(){ if(!window.katex) return;
+    var o='\\color{#b4441a}', b='\\color{#1d4fa3}', g='\\color{#6b7280}';
+    katex.render('T(K_v,K_a,N)\\;\\approx\\;\\underbrace{{'+g+' T_0}}_{\\text{encode + I/O}}\\;+\\;\\underbrace{{'+o+' L(K_v)\\,t_v}}_{\\text{video expert: once}}\\;+\\;\\underbrace{{'+b+' N\\cdot L(K_a)\\,t_a}}_{\\text{action expert: }N\\text{ times}}',document.getElementById('fxMain'),{displayMode:true,throwOnError:false});
+    katex.render('L(K)\\;=\\;\\underbrace{3}_{\\text{prelude}}\\;+\\;\\underbrace{{\\color{#e8622c}6}K}_{\\text{shared core}\\,\\times\\,K}\\;+\\;\\underbrace{3}_{\\text{coda}}\\qquad\\text{e.g. }L(4)=30,\\;L(1)=12',document.getElementById('fxDepth'),{displayMode:true,throwOnError:false});
+  }
+  if(document.readyState==='complete') tex(); else window.addEventListener('load',tex);
+
+  /* ---------- result tabs ---------- */
+  var tabs=[].slice.call(document.querySelectorAll('.tabs [role=tab]'));
+  function sel(t){tabs.forEach(function(b){var on=b===t;b.setAttribute('aria-selected',on);document.getElementById(b.getAttribute('aria-controls')).classList.toggle('on',on);});}
+  tabs.forEach(function(b,i){b.addEventListener('click',function(){sel(b);});b.addEventListener('keydown',function(e){var d=e.key==='ArrowRight'?1:e.key==='ArrowLeft'?-1:0;if(d){var n=tabs[(i+d+tabs.length)%tabs.length];n.focus();sel(n);}});});
+
+  /* ---------- copy bibtex ---------- */
+  document.getElementById('copyBib').addEventListener('click',function(){var b=this,t=document.getElementById('bib').textContent.replace(/^Copy/,'').trim();
+    (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){b.textContent='Copied';setTimeout(function(){b.textContent='Copy';},1500);},function(){b.textContent='Select & copy';});});
+
+  /* ---------- elastic explorer ---------- */
+  // [Ka, N, block calls, latency ms, mem GB, spatial, object, goal, long, avg]
+  var D=[[1,2,24,24.7,2.58,96.87,99.07,96.60,88.20,95.18],[2,2,36,27.6,2.68,97.80,99.13,97.80,89.20,95.98],[4,2,60,33.2,2.78,97.20,99.27,97.53,88.53,95.63],
+         [1,5,60,33.3,2.62,97.40,98.80,95.80,88.93,95.23],[2,5,90,39.1,2.72,97.67,98.93,96.87,88.73,95.55],[1,10,120,47.9,2.65,97.27,99.27,96.07,88.73,95.33],
+         [4,5,150,54.5,2.82,97.67,99.33,97.07,90.33,96.10],[2,10,180,59.9,2.75,97.53,99.00,96.60,89.53,95.67],[4,10,300,86.2,2.85,97.60,98.87,97.73,90.67,96.22]];
+  var TEACH={lat:91.8,s:96.10,mem:2.05}, FAST={lat:107.5,s:96.63,mem:15.25};
+  var tb=document.querySelector('#nineTable tbody');
+  D.forEach(function(r){var tr=document.createElement('tr');tr.innerHTML=r.map(function(v,i){return '<td>'+(i>=5?v.toFixed(2):v)+'</td>';}).join('');tb.appendChild(tr);});
+  var tr2=document.createElement('tr');tr2.className='ours';tr2.innerHTML='<td colspan="3">LoopedWAM teacher (4, 10)</td><td>91.8</td><td>2.05</td><td>96.87</td><td>99.53</td><td>97.87</td><td>90.13</td><td>96.10</td>';tb.appendChild(tr2);
+
+  var NS='http://www.w3.org/2000/svg', svg=document.getElementById('chart'), tip=document.getElementById('tip'), box=document.getElementById('chartBox');
+  var W=640,H=400,m={l:52,r:18,t:16,b:46}, x0=0,x1=115, y0=95.0,y1=96.8;
+  function X(v){return m.l+(v-x0)/(x1-x0)*(W-m.l-m.r);} function Y(v){return H-m.b-(v-y0)/(y1-y0)*(H-m.t-m.b);}
+  function el(n,a,p){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e;}
+  var g=el('g',{});
+  for(var yv=95.0;yv<=96.81;yv+=0.4){el('line',{x1:m.l,x2:W-m.r,y1:Y(yv),y2:Y(yv),stroke:'#e9ecf0','stroke-width':1},g);el('text',{x:m.l-8,y:Y(yv)+4,'text-anchor':'end','font-size':12,fill:'#6b7280'},g).textContent=yv.toFixed(1);}
+  for(var xv=0;xv<=110;xv+=20){el('line',{x1:X(xv),x2:X(xv),y1:H-m.b,y2:H-m.b+5,stroke:'#c4c9d1'},g);el('text',{x:X(xv),y:H-m.b+20,'text-anchor':'middle','font-size':12,fill:'#6b7280'},g).textContent=xv;}
+  el('line',{x1:m.l,x2:W-m.r,y1:H-m.b,y2:H-m.b,stroke:'#c4c9d1'},g);
+  el('text',{x:(m.l+W-m.r)/2,y:H-8,'text-anchor':'middle','font-size':13,fill:'#3d4450'},g).textContent='Latency per query (ms, one H100)';
+  var yl=el('text',{x:14,y:(m.t+H-m.b)/2,'text-anchor':'middle','font-size':13,fill:'#3d4450',transform:'rotate(-90 14 '+((m.t+H-m.b)/2)+')'},g);yl.textContent='LIBERO success (%)';
+  // Pareto front (lower latency and higher success)
+  var sorted=D.slice().sort(function(a,b){return a[3]-b[3];}),front=[],best=-1;sorted.forEach(function(r){if(r[9]>best){front.push(r);best=r[9];}});
+  el('polyline',{points:front.map(function(r){return X(r[3])+','+Y(r[9]);}).join(' '),fill:'none',stroke:'#2a6fdb','stroke-width':2,'stroke-opacity':.55});
+  // speed-up bracket to Fast-WAM drawn dynamically
+  var br=el('line',{stroke:'#b4441a','stroke-width':1.5,'stroke-dasharray':'4 4'}), brt=el('text',{'font-size':12.5,fill:'#b4441a','text-anchor':'middle','font-weight':600});
+  // reference marks
+  function diamond(cx,cy,s){return (cx)+','+(cy-s)+' '+(cx+s)+','+cy+' '+cx+','+(cy+s)+' '+(cx-s)+','+cy;}
+  var refs=[{lat:FAST.lat,s:FAST.s,lab:'Fast-WAM* (~6B)',c:'#8a8f98',shape:'c',mem:FAST.mem,dx:-4,dy:22,anc:'end'},{lat:TEACH.lat,s:TEACH.s,lab:'LoopedWAM teacher',c:'#e8622c',shape:'d',mem:TEACH.mem,dx:4,dy:24,anc:'middle'}];
+  refs.forEach(function(r){var mk=r.shape==='c'?el('circle',{cx:X(r.lat),cy:Y(r.s),r:6,fill:r.c,stroke:'#fff','stroke-width':2}):el('polygon',{points:diamond(X(r.lat),Y(r.s),8),fill:r.c,stroke:'#fff','stroke-width':2});
+    el('text',{x:X(r.lat)+r.dx,y:Y(r.s)+r.dy,'text-anchor':r.anc,'font-size':12.5,fill:'#3d4450'}).textContent=r.lab;
+    hover(mk,'<b>'+r.lab+'</b><br>'+r.lat+' ms &middot; '+r.s.toFixed(2)+'% &middot; '+r.mem+' GB',X(r.lat),Y(r.s));});
+  var pts=[],labs=[];
+  D.forEach(function(r){var c=el('circle',{cx:X(r[3]),cy:Y(r[9]),r:6,fill:'#2a6fdb',stroke:'#fff','stroke-width':2,tabindex:0,role:'button','aria-label':'Ka '+r[0]+', N '+r[1]+': '+r[9]+'% at '+r[3]+' ms',style:'cursor:pointer'});
+    var t=el('text',{x:X(r[3])+9,y:Y(r[9])+4,'font-size':11.5,fill:'#1d4fa3'});t.textContent='('+r[0]+','+r[1]+')';
+    hover(c,'<b>LoopedWAM-E ('+r[0]+', '+r[1]+')</b><br>'+r[3]+' ms &middot; '+r[9].toFixed(2)+'% &middot; '+r[2]+' block calls',X(r[3]),Y(r[9]));
+    c.addEventListener('click',function(){choose(r[0],r[1]);}); c.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();choose(r[0],r[1]);}});
+    pts.push(c);labs.push(t);});
+  // de-collide labels of (4,2) and (1,5): nearly the same latency
+  labs[3].setAttribute('y',+labs[3].getAttribute('y')+12); labs[2].setAttribute('y',+labs[2].getAttribute('y')-6);
+  var ring=el('circle',{r:11,fill:'none',stroke:'#1d4fa3','stroke-width':2.5});
+  function hover(node,html,px,py){function show(){tip.innerHTML=html;var s=svg.getBoundingClientRect(),bb=box.getBoundingClientRect(),k=s.width/W;tip.style.left=(s.left-bb.left+px*k)+'px';tip.style.top=(s.top-bb.top+py*k)+'px';tip.style.opacity=1;}
+    node.addEventListener('mouseenter',show);node.addEventListener('focus',show);node.addEventListener('mouseleave',function(){tip.style.opacity=0;});node.addEventListener('blur',function(){tip.style.opacity=0;});}
+
+  var state={k:2,n:2};
+  function mkSeg(id,vals,key){var s=document.getElementById(id);vals.forEach(function(v){var b=document.createElement('button');b.type='button';b.textContent=v;b.dataset.v=v;b.addEventListener('click',function(){state[key]=v;render();});s.appendChild(b);});}
+  mkSeg('segK',[1,2,4],'k'); mkSeg('segN',[2,5,10],'n');
+  function choose(k,n){state.k=k;state.n=n;render();}
+  function render(){
+    [['segK','k'],['segN','n']].forEach(function(p){[].forEach.call(document.getElementById(p[0]).children,function(b){b.setAttribute('aria-pressed',+b.dataset.v===state[p[1]]);});});
+    var r=D.filter(function(d){return d[0]===state.k&&d[1]===state.n;})[0];
+    D.forEach(function(d,i){var on=d===r;pts[i].setAttribute('r',on?8:6);pts[i].setAttribute('fill-opacity',on?1:.55);});
+    ring.setAttribute('cx',X(r[3]));ring.setAttribute('cy',Y(r[9]));
+    var yb=Y(96.72); br.setAttribute('x1',X(r[3]));br.setAttribute('x2',X(FAST.lat));br.setAttribute('y1',yb);br.setAttribute('y2',yb);
+    brt.setAttribute('x',(X(r[3])+X(FAST.lat))/2);brt.setAttribute('y',yb-6);brt.textContent=(FAST.lat/r[3]).toFixed(1)+'× faster than Fast-WAM*';
+    document.getElementById('roS').textContent=r[9].toFixed(1)+'%';
+    document.getElementById('roL').textContent=r[3]+' ms';
+    document.getElementById('roC').textContent=r[2];
+    document.getElementById('roX').textContent=(FAST.lat/r[3]).toFixed(1)+'×';
+    var dep=document.getElementById('depth');dep.innerHTML='';
+    function blk(c){var i=document.createElement('i');if(c)i.className='core';dep.appendChild(i);}
+    for(var a=0;a<3;a++)blk(false);for(var kk=0;kk<state.k*6;kk++)blk(true);for(var b=0;b<3;b++)blk(false);
+    var sm=document.createElement('small');sm.textContent=(6+6*state.k)+' blocks × '+state.n+' steps';dep.appendChild(sm);
+    var d=(r[9]-TEACH.s);
+    document.getElementById('cmp').innerHTML='vs. the LoopedWAM teacher at (4, 10): <b>'+(d>=0?'+':'')+d.toFixed(2)+' pts</b> success, <b>'+(TEACH.lat/r[3]).toFixed(1)+'&times;</b> faster. Long-horizon suite: '+r[8].toFixed(1)+'%.';
+  }
+  render();
+})();
+</script>
+</body>
+</html>
