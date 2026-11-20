@@ -59,9 +59,6 @@ h1.title .m{background:linear-gradient(90deg,var(--orange),#d9480f 40%,var(--blu
 .btn svg{width:18px;height:18px;fill:currentColor}
 .btn.ghost{background:#fff;color:var(--ink);border-color:var(--line)}
 .btn.ghost:hover{background:var(--bg-soft)}
-.btn.soon{background:#fff;color:var(--ink-3);border-color:var(--line);cursor:default}
-.btn.soon:hover{transform:none}
-.btn small{font-weight:500;font-size:12px;opacity:.8}
 
 /* hero video */
 .hero-media{margin:34px auto 0;max-width:900px;position:relative;border-radius:var(--radius);overflow:hidden;background:#000;box-shadow:0 20px 50px -20px rgba(16,24,40,.35)}
@@ -174,7 +171,9 @@ td.best{font-weight:800}
 .btngrid video{width:100%;aspect-ratio:4/3}
 .btngrid .lb{position:absolute;font-size:13.5px;font-weight:700;color:#fff;padding:5px 10px;border-radius:999px}
 .realtable td,.realtable th{padding:9px 14px}
-.split{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:28px}
+.realtable td.o{background:var(--bg-tint)}
+.realtable th i,.realtable th sub{text-transform:none}
+.realtable tr.sum td{border-top:2px solid var(--line)}
 .note{font-size:13.5px;color:var(--ink-3);margin-top:8px}
 
 /* bibtex */
@@ -187,7 +186,7 @@ footer{padding:36px 0 50px;border-top:1px solid var(--line);color:var(--ink-3);f
   .stats{grid-template-columns:repeat(2,1fr)}
   .cards{grid-template-columns:1fr}
   .explorer{grid-template-columns:1fr}
-  .find,.split{grid-template-columns:1fr}
+  .find{grid-template-columns:1fr}
 }
 @media (max-width:640px){
   .wrap{padding:0 16px}
@@ -232,9 +231,10 @@ footer{padding:36px 0 50px;border-top:1px solid var(--line);color:var(--ink-3);f
       <a class="uni" href="https://www.ucf.edu"><img src="static/images/ucf_seal.webp" alt="" width="56" height="56"><span><sup>1</sup>University of Central Florida</span></a>
     </div>
     <div class="btns">
-      <span class="btn soon" title="The paper link will be added when it is public"><svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6zM14 3.5V8h4.5"/></svg>Paper <small>coming soon</small></span>
-      <span class="btn soon" title="The code link will be added when it is public"><svg viewBox="0 0 24 24"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.4 11.4 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5z"/></svg>Code <small>coming soon</small></span>
-      <span class="btn soon" title="The model link will be added when it is public"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm-3.5 7a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm7 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM7 14h10a5 5 0 0 1-10 0z"/></svg>Models <small>coming soon</small></span>
+      <a class="btn" href="https://arxiv.org/pdf/2611.25595"><svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6zM14 3.5V8h4.5"/></svg>Paper</a>
+      <a class="btn" href="https://arxiv.org/abs/2611.25595"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM8 8h8M8 12h8M8 16h5" fill="none" stroke="currentColor" stroke-width="2"/></svg>arXiv</a>
+      <a class="btn" href="https://github.com/anhdao69/LoopedWAM"><svg viewBox="0 0 24 24"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.4 11.4 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5z"/></svg>Code</a>
+      <a class="btn" href="https://huggingface.co/anhdao69/LoopedWAM"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm-3.5 7a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm7 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM7 14h10a5 5 0 0 1-10 0z"/></svg>Models</a>
       <a class="btn ghost" href="#real"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Robot videos</a>
     </div>
 
@@ -257,7 +257,7 @@ footer{padding:36px 0 50px;border-top:1px solid var(--line);color:var(--ink-3);f
   <div class="wrap narrow">
     <p class="eyebrow">Abstract</p>
     <h2>Compact world action models with depth you can choose at test time</h2>
-    <p class="abstract">World action models (WAMs) couple generative video modeling with robotic action prediction but typically require large video and action transformers, limiting deployment efficiency. We present <b>LoopedWAM</b>, a compact WAM that recurrently applies a shared six-block core in each expert, executing 30 transformer layers while storing only 12 blocks per expert. To account for their asymmetric inference costs, the video and action experts can operate at different depths: visual features are computed once per query, whereas action computation repeats at every sampling step. We further propose <b>elastic self-distillation</b>, which trains a single elastic checkpoint, <b>LoopedWAM-E</b>, across action-depth and sampling-step budgets. With only 0.58B policy parameters and no robot pretraining, LoopedWAM achieves 96.1% success on LIBERO, 91.9% on RoboTwin&nbsp;2.0, and 52.2% on RoboCasa-GR1, while using 7.4&times; less peak GPU memory than Fast-WAM under matched inference measurements. On LIBERO, LoopedWAM-E achieves 96.0% success in 27.6&nbsp;ms or 95.2% in 24.7&nbsp;ms on an H100, providing multiple accuracy&ndash;latency operating points from a single checkpoint; with two sampling steps and four action loops, it stays within 0.5 points of LoopedWAM on all three benchmarks. Ablations demonstrate that weight-shared depth preserves competitive performance, while aggressive action-depth reduction requires explicit budget-aware training. On a real AgileX PiPER arm, LoopedWAM completes four manipulation tasks from 100 demonstrations each.</p>
+    <p class="abstract">World action models (WAMs) couple generative video modeling with robotic action prediction but typically require large video and action transformers, limiting deployment efficiency. We present <b>LoopedWAM</b>, a compact WAM that recurrently applies a shared six-block core in each expert, executing 30 transformer layers while storing only 12 blocks per expert. To account for their asymmetric inference costs, the video and action experts can operate at different depths: visual features are computed once per query, whereas action computation repeats at every sampling step. We further propose <b>elastic self-distillation</b>, which trains a single elastic checkpoint, <b>LoopedWAM-E</b>, across action-depth and sampling-step budgets. With only 0.58B policy parameters and no robot pretraining, LoopedWAM achieves 96.1% success on LIBERO, 91.9% on RoboTwin&nbsp;2.0, and 52.2% on RoboCasa-GR1, while using 7.4&times; less peak GPU memory than Fast-WAM under matched inference measurements. On LIBERO, LoopedWAM-E achieves 96.0% success in 27.6&nbsp;ms or 95.2% in 24.7&nbsp;ms on an H100, providing multiple accuracy&ndash;latency operating points from a single checkpoint; with two sampling steps and four action loops, it stays within 0.5 points of LoopedWAM on all three benchmarks. Ablations demonstrate that weight-shared depth preserves competitive performance, while aggressive action-depth reduction requires explicit budget-aware training. On a real AgileX PiPER arm, LoopedWAM succeeds in 71.3% of 80 trials across four tasks.</p>
     <figure>
       <a href="static/images/teaser-new.png" title="Open full size"><img src="static/images/teaser-new.png" alt="Three panels: (a) stored versus executed layers, (b) RoboTwin 2.0 success versus parameters, (c) LIBERO success versus latency" loading="lazy"></a>
       <figcaption><b>LoopedWAM is small, fast, and elastic.</b> (a) Each expert stores 12 blocks and loops its shared 6-block core <i>K</i> times, reaching the 30-layer depth of its dense donor with 2.4&times; fewer parameters. (b) RoboTwin&nbsp;2.0 success against parameters, as reported by each paper. (c) LIBERO success against latency on one H100 for every setting of LoopedWAM-E; at (<i>K<sub>a</sub></i>,&nbsp;<i>N</i>)&nbsp;=&nbsp;(2,&nbsp;2) it is 3.9&times; faster than Fast-WAM.</figcaption>
@@ -476,7 +476,7 @@ footer{padding:36px 0 50px;border-top:1px solid var(--line);color:var(--ink-3);f
   <div class="wrap">
     <p class="eyebrow">Real world</p>
     <h2>Four tasks on a real AgileX PiPER arm</h2>
-    <p class="lead">A 6-DoF PiPER with a parallel gripper, observed by a front and a wrist RealSense D435i. We collect 100 teleoperated demonstrations per task and train LoopedWAM from the same Wan2.1 donor. The policy outputs 32 absolute joint targets per query at 15&nbsp;Hz.</p>
+    <p class="lead">A 6-DoF PiPER with a parallel gripper, observed by a front and a wrist RealSense D435i and controlled in joint space (absolute targets for the six joints and the gripper opening). We collect 400 teleoperated demonstrations (100 per task, 25 per button color) with object poses randomized inside a 30&times;40&nbsp;cm workspace. LoopedWAM is trained on all four tasks jointly from the same Wan2.1 donor and then distilled into LoopedWAM-E; Fast-WAM* is fine-tuned from its released weights on the same data.</p>
     <figure>
       <a href="static/images/real.jpg" title="Open full size"><img src="static/images/real.jpg" alt="Real-robot setup with leader and follower arms, and start and end states of the four tasks" loading="lazy"></a>
       <figcaption><b>Setup and tasks.</b> (a) Follower arm with front and wrist cameras; demonstrations come from teleoperation with a leader arm. (b&ndash;e) Start and end states of the four tasks.</figcaption>
@@ -503,33 +503,20 @@ footer{padding:36px 0 50px;border-top:1px solid var(--line);color:var(--ink-3);f
       <div class="vcard"><div class="views"><div>Front</div><div>Wrist</div></div><video class="lazyv" data-src="static/videos/ep066.mp4" poster="static/videos/ep066.jpg" muted loop playsinline preload="none"></video><div class="meta"><b>"put the spoon in the bowl"</b></div></div>
     </div>
 
-    <div class="split">
-      <div>
-        <h3>Success, LoopedWAM</h3>
-        <div class="tscroll"><table class="realtable">
-          <thead><tr><th>Task</th><th>Success</th><th>Rate</th></tr></thead>
-          <tbody>
-            <tr><td>Place can on plate</td><td>17 / 24</td><td>70.8%</td></tr>
-            <tr><td>Press color button</td><td>20 / 22</td><td>90.9%</td></tr>
-            <tr><td>Stack bowls</td><td>11 / 16</td><td>68.8%</td></tr>
-            <tr><td>Put spoon in bowl</td><td>12 / 21</td><td>57.1%</td></tr>
-            <tr class="ours"><td>All</td><td>60 / 83</td><td>72.3%</td></tr>
-          </tbody></table></div>
-        <p class="note">One evaluation session with randomized object placements; every trial starts from the same home pose.</p>
-      </div>
-      <div>
-        <h3>Cost on one GPU</h3>
-        <div class="tscroll"><table class="realtable">
-          <thead><tr><th>Model</th><th>Latency</th><th>Peak mem.</th></tr></thead>
-          <tbody>
-            <tr><td>Fast-WAM* (~6B)</td><td>150 ms</td><td>12.7 GiB</td></tr>
-            <tr class="ours"><td>LoopedWAM</td><td>160 ms</td><td>3.7 GiB</td></tr>
-            <tr class="ours"><td>LoopedWAM-E (4, 2)</td><td>58 ms</td><td>3.3 GiB</td></tr>
-            <tr class="ours"><td>LoopedWAM-E (2, 2)</td><td>46 ms</td><td>3.3 GiB</td></tr>
-          </tbody></table></div>
-        <p class="note">Full robot query (preprocessing and 32-action chunk) on one RTX PRO 6000, batch 1. *Fine-tuned by us on the same demonstrations.</p>
-      </div>
-    </div>
+    <h3 style="margin-top:44px">Results</h3>
+    <div class="tscroll"><table class="realtable">
+      <thead><tr><th>Task</th><th>Fast-WAM*</th><th>LoopedWAM</th><th>LoopedWAM-E (<i>K<sub>a</sub></i>=4, <i>N</i>=2)</th><th>LoopedWAM-E (<i>K<sub>a</sub></i>=2, <i>N</i>=2)</th></tr></thead>
+      <tbody>
+        <tr><td>Place can on plate</td><td>14/20</td><td class="o">14/20</td><td class="o">14/20</td><td class="o">13/20</td></tr>
+        <tr><td>Press color button</td><td>18/20</td><td class="o">18/20</td><td class="o">17/20</td><td class="o">17/20</td></tr>
+        <tr><td>Stack bowls</td><td>14/20</td><td class="o">14/20</td><td class="o">14/20</td><td class="o">14/20</td></tr>
+        <tr><td>Put spoon in bowl</td><td>11/20</td><td class="o">11/20</td><td class="o">10/20</td><td class="o">10/20</td></tr>
+        <tr class="sum"><td>Total</td><td>57/80</td><td class="o">57/80</td><td class="o">55/80</td><td class="o">54/80</td></tr>
+        <tr><td>Success (%)</td><td>71.3</td><td class="o">71.3</td><td class="o">68.8</td><td class="o">67.5</td></tr>
+        <tr><td>Latency (ms)</td><td>150</td><td class="o">160</td><td class="o">58</td><td class="o">46</td></tr>
+        <tr><td>Mem (GB)</td><td>12.7</td><td class="o">3.7</td><td class="o">3.3</td><td class="o">3.3</td></tr>
+      </tbody></table></div>
+    <p class="note">Successful trials out of 20 per task and method, with randomized object poses; before every trial the arm returns to the same home pose, and a trial succeeds if the instructed end state is reached within 60&nbsp;s. All models are trained on the same 100 demonstrations per task. *Fine-tuned and evaluated by us. Latency is measured on the robot computer (RTX PRO 6000).</p>
   </div>
 </section>
 
@@ -541,6 +528,7 @@ footer{padding:36px 0 50px;border-top:1px solid var(--line);color:var(--ink-3);f
   title   = {LoopedWAM: Looped World Action Models for Elastic Inference},
   author  = {Dao, Anh and Liu, Xinxin and Yu, Hang and
              Chan Santiago, Jeffrey A. and Shang, Yuzhang},
+  journal = {arXiv preprint arXiv:2611.25595},
   year    = {2026}
 }</pre>
   </div>
