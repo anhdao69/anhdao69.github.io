@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anh Dao</title>
+<meta name="description" content="Anh Dao, Ph.D. student in Computer Science at the University of Central Florida, advised by Yuzhang Shang. Efficient embodied AI: vision-language navigation, world action models and humanoid robots.">
+<meta property="og:title" content="Anh Dao">
+<meta property="og:description" content="Ph.D. student at UCF working on efficient embodied AI: vision-language navigation, world action models and humanoid robots.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2c8 0 12 5 12 12s-5 13-12 13S4 21 4 14 8 2 16 2z' fill='%23e9ecf0' stroke='%23596370' stroke-width='1.5'/%3E%3Cpath d='M8 11c4-2 12-2 16 0 1 3 1 6-1 8-4 2-10 2-14 0-2-2-2-5-1-8z' fill='%231b2028'/%3E%3Crect x='11' y='13' width='3.5' height='2.4' rx='1.2' fill='%237ff0dc'/%3E%3Crect x='17.5' y='13' width='3.5' height='2.4' rx='1.2' fill='%237ff0dc'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a sticky section bar on top; a sticky profile card on the left
+   (photo, contacts) like many academic homepages; the right column holds
+   About, News, Publications (by year, one teaser per paper) and the CV
+   sections. The Roadmap view swaps the right column for the humanoid map. */
+:root {
+  --bg: #ffffff;
+  --surface: #f5f6f8;
+  --ink: #16191e;
+  --muted: #5c646f;
+  --line: #e3e6ea;
+  --hl: #fffbe3;
+  --link: #1f5fbf;
+  --head: #5557d2;
+  --legs: #0b8a75;
+  --arms: #b4650c;
+  --core: #cf3a55;
+  --b1: #ffffff; --b2: #eceff3; --b3: #d3d9e0; --bs: #8a939e;
+  --visor: #161b22; --eye: #8fdcff;
+  --font-display: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111418; --surface: #181c22; --ink: #e8ebef; --muted: #9ba4af; --line: #2a3038; --hl: #25231a; --link: #8ab4ff;
+    --head: #a2a4f8; --legs: #45c9b0; --arms: #eba552; --core: #f27b92;
+    --b1: #444c57; --b2: #333a43; --b3: #252a31; --bs: #707a86; --visor: #07090b;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111418; --surface: #181c22; --ink: #e8ebef; --muted: #9ba4af; --line: #2a3038; --hl: #25231a; --link: #8ab4ff;
+  --head: #a2a4f8; --legs: #45c9b0; --arms: #eba552; --core: #f27b92;
+  --b1: #444c57; --b2: #333a43; --b3: #252a31; --bs: #707a86; --visor: #07090b;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-padding-top: 72px; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 15.5px/1.6 var(--font-body); -webkit-font-smoothing: antialiased; }
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; border-radius: 4px; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
+.mono { font: 500 12px/1.4 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; }
+[data-part="head"] { --c: var(--head); }
+[data-part="legs"] { --c: var(--legs); }
+[data-part="arms"] { --c: var(--arms); }
+[data-part="core"] { --c: var(--core); }
+[hidden] { display: none !important; }
+
+/* ---------- top navigation ---------- */
+.navbar { position: sticky; top: 0; z-index: 10; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.navbar .wrap { display: flex; justify-content: flex-end; }
+.navbar nav { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; padding: 12px 0; }
+.navbar nav::-webkit-scrollbar { display: none; }
+.navbar a { white-space: nowrap; padding: 6px 12px; border-radius: 999px; color: var(--muted); font-size: 14.5px; font-weight: 500; }
+.navbar a:hover { color: var(--ink); background: var(--surface); text-decoration: none; }
+.navbar a.on { color: var(--ink); background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); }
+
+/* ---------- two columns ---------- */
+.layout { display: grid; grid-template-columns: 252px minmax(0, 1fr); gap: 52px; padding: 36px 0 0; align-items: start; }
+
+.profile { position: sticky; top: 84px; border: 1px solid var(--line); border-radius: 14px; padding: 22px 20px; background: var(--bg); }
+.profile .photo { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 16px; border: 4px solid var(--surface); }
+.profile h1 { font: 500 26px/1.15 var(--font-display); margin: 0 0 4px; }
+.profile .role { margin: 0 0 14px; color: var(--muted); font-size: 14.5px; line-height: 1.45; }
+.profile ul { list-style: none; margin: 0; padding: 14px 0 0; border-top: 1px solid var(--line); display: grid; gap: 9px; }
+.profile li { display: flex; align-items: center; gap: 10px; font-size: 14.5px; min-width: 0; }
+.profile li svg { width: 17px; height: 17px; flex: none; fill: none; stroke: var(--muted); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.profile li a { color: var(--ink); overflow-wrap: anywhere; }
+.profile li a:hover { color: var(--link); }
+.profile li .plain { color: var(--muted); }
+.open { margin-top: 16px; padding: 9px 12px; border-radius: 10px; background: color-mix(in srgb, var(--legs) 8%, var(--bg)); border: 1px solid color-mix(in srgb, var(--legs) 25%, var(--line)); font-size: 13.5px; line-height: 1.45; }
+.open b { color: var(--legs); font-weight: 600; display: block; }
+
+section { padding: 0 0 34px; }
+h2 { font: 400 27px/1.2 var(--font-display); margin: 0 0 12px; display: flex; align-items: baseline; gap: 12px; }
+h2::after { content: ""; flex: 1; height: 1px; background: var(--line); transform: translateY(-6px); }
+
+.about p { margin: 0 0 12px; max-width: 68ch; }
+.about em { color: var(--core); }
+.logo { height: 1.25em; width: auto; vertical-align: -0.27em; margin-right: 5px; }
+
+.news { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.news li { display: grid; grid-template-columns: 82px minmax(0, 1fr); gap: 14px; font-size: 14.5px; line-height: 1.5; }
+.news .when { font: 500 13px/1.65 var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.news b { font-weight: 600; }
+.news.clip li:nth-child(n+7) { display: none; }
+.more-news { margin-top: 8px; background: none; border: 0; padding: 0; color: var(--link); cursor: pointer; font-size: 14px; }
+
+/* ---------- publications ---------- */
+.pub-note { margin: -4px 0 6px; color: var(--muted); font-size: 14px; }
+.pub-note .sw { display: inline-block; width: 16px; height: 10px; border-radius: 2px; background: var(--hl); border: 1px solid color-mix(in srgb, var(--arms) 35%, var(--line)); vertical-align: -1px; margin: 0 3px 0 2px; }
+.year { margin: 22px 0 4px; font: 500 13px/1 var(--font-mono); letter-spacing: .1em; color: var(--muted); }
+.paper { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 22px; align-items: center; padding: 16px; margin: 0 -16px; border-radius: 10px; scroll-margin-top: 80px; transition: box-shadow .3s; }
+.paper.lead { background: var(--hl); }
+.paper.flash { box-shadow: 0 0 0 2px var(--link); }
+.media { aspect-ratio: 16 / 10; border-radius: 8px; overflow: hidden; background: #fff; border: 1px solid var(--line); }
+.media video { display: block; width: 100%; height: 100%; object-fit: cover; }
+.media img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.card { width: 100%; height: 100%; display: grid; place-items: center; background: color-mix(in srgb, var(--c) 9%, var(--surface)); }
+.card span { font: 500 22px/1.1 var(--font-display); color: var(--c); }
+.ptitle { margin: 0 0 3px; font: 600 15.5px/1.4 var(--font-body); text-wrap: pretty; }
+.ptitle a { color: var(--ink); }
+.ptitle a:hover { color: var(--link); text-decoration: none; }
+.authors { margin: 0; font-size: 14px; line-height: 1.5; }
+.authors a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 3px; }
+.authors b { font-weight: 600; }
+.authors sup { font-size: .7em; line-height: 0; }
+.more-btn { background: none; border: 0; padding: 0; color: var(--link); cursor: pointer; font-size: 14px; }
+.venue { margin: 2px 0 0; font-style: italic; font-size: 14px; }
+.venue.accepted { font-weight: 600; }
+.venue.preprint, .venue.review { color: var(--muted); }
+.links { margin: 2px 0 0; font-size: 14px; }
+.links .sep, .sep { color: var(--line); margin: 0 6px; }
+.bib-btn { background: none; border: 0; padding: 0; color: var(--link); cursor: pointer; font-size: 14px; }
+.bib-btn:hover { text-decoration: underline; text-underline-offset: 3px; }
+.tldr { margin: 5px 0 0; font-size: 14px; line-height: 1.5; color: var(--muted); max-width: 64ch; }
+.bib { position: relative; margin-top: 10px; }
+.bib pre { margin: 0; padding: 12px 70px 12px 14px; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; font: 400 12px/1.55 var(--font-mono); overflow-x: auto; }
+.copy-btn { position: absolute; top: 8px; right: 8px; font: 500 12px/1 var(--font-mono); padding: 6px 9px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); cursor: pointer; }
+
+/* ---------- CV lists ---------- */
+.cv { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.cv li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 18px; }
+.cv .what { font-weight: 600; }
+.cv .where { grid-column: 1; color: var(--muted); font-size: 14.5px; line-height: 1.5; }
+.cv .when { grid-row: 1; grid-column: 2; font: 400 13px/1.9 var(--font-mono); color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.cv .where a { color: var(--link); }
+.sub-h { margin: 22px 0 10px; color: var(--muted); }
+.honors li { grid-template-columns: 92px minmax(0, 1fr); gap: 14px; font-size: 14.5px; line-height: 1.5; }
+.honors .when { grid-row: auto; grid-column: 1; line-height: 1.65; }
+.honors .what { font-weight: 400; }
+.honors .what b { font-weight: 600; }
+
+footer { margin-top: 20px; border-top: 1px solid var(--line); padding: 20px 0 40px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; color: var(--muted); font-size: 13px; }
+
+/* ---------- roadmap ---------- */
+.rm-intro { color: var(--muted); max-width: 66ch; margin: 0 0 4px; }
+.figure svg { display: block; width: 100%; height: auto; }
+.robot .plate { fill: url(#metal); stroke: var(--bs); stroke-width: 1.3; stroke-linejoin: round; }
+.robot .seam { fill: none; stroke: var(--bs); stroke-opacity: .55; stroke-width: 1.1; stroke-linecap: round; }
+.robot .shadow { fill: var(--ink); opacity: .08; }
+.robot .trail { fill: var(--legs); }
+.robot .g1 { stop-color: var(--b1); } .robot .g2 { stop-color: var(--b2); } .robot .g3 { stop-color: var(--b3); }
+.bp { cursor: pointer; outline: none; transition: opacity .2s; }
+.bp .acc { fill: color-mix(in srgb, var(--c) 22%, var(--b1)); stroke: var(--c); stroke-width: 1.5; transition: fill .2s; }
+.bp .accs { fill: var(--c); }
+.bp .accl { fill: none; stroke: var(--c); stroke-width: 2; stroke-linecap: round; }
+.bp .glow { fill: none; stroke: var(--c); stroke-width: 6; opacity: .14; }
+.bp:hover .acc, .bp.on .acc { fill: color-mix(in srgb, var(--c) 55%, var(--b1)); }
+.bp:hover .plate, .bp.on .plate { stroke: var(--c); }
+.bp:focus-visible .acc { stroke-width: 3; }
+.robot.focus .bp:not(.on) { opacity: .4; }
+.robot .visor { fill: var(--visor); }
+.robot .belly { fill: var(--b1); stroke: var(--bs); stroke-opacity: .5; stroke-width: 1.1; }
+.robot .shine { fill: #fff; opacity: .9; }
+.robot .smile { fill: none; stroke: var(--eye); stroke-width: 3.6; stroke-linecap: round; }
+.robot .screen { fill: url(#screenG); }
+.robot .lens { fill: url(#lensG); }
+.co .pn { font: italic 400 13px var(--font-body); fill: var(--muted); }
+
+.pick { margin: 6px 0 0; min-height: 1.6em; color: var(--muted); font-size: 14px; }
+.pick b { color: var(--ink); font-weight: 600; }
+.pick button { margin-left: 6px; background: none; border: 1px solid var(--line); border-radius: 999px; padding: 1px 10px; font-size: 13px; cursor: pointer; color: var(--muted); }
+.pick button:hover { color: var(--ink); border-color: var(--muted); }
+.stage, .stage li, .eff { transition: opacity .2s, background-color .2s, box-shadow .2s; }
+.stage li { border-radius: 6px; padding: 2px 6px; margin: 0 -6px; }
+.picking .stage:not(.hit):not(.next) { opacity: .45; }
+.picking .stage.hit { box-shadow: 0 0 0 2px color-mix(in srgb, var(--c) 45%, transparent); }
+.picking .stage li:not(.hit) { opacity: .4; }
+.picking .stage li.hit { background: color-mix(in srgb, var(--hc) 13%, transparent); }
+.stages[data-sel="head"] { --hc: var(--head); } .stages[data-sel="legs"] { --hc: var(--legs); }
+.stages[data-sel="arms"] { --hc: var(--arms); } .stages[data-sel="core"] { --hc: var(--core); }
+.eff.hit { box-shadow: 0 0 0 2px color-mix(in srgb, var(--core) 45%, transparent); }
+.robot .eye { fill: var(--eye); filter: drop-shadow(0 0 3px color-mix(in srgb, var(--eye) 60%, transparent)); }
+.robot .glare { fill: none; stroke: #fff; stroke-opacity: .28; stroke-width: 2; stroke-linecap: round; }
+.co { transition: opacity .2s; }
+.robot.focus .co:not(.on) { opacity: .28; }
+.co .lead-line { fill: none; stroke: var(--c); stroke-width: 1.3; stroke-dasharray: 3 4; }
+.co .dot { fill: var(--c); }
+.co .t1 { font: 500 11.5px var(--font-mono); letter-spacing: .1em; fill: var(--c); }
+.co .t2 { font: 600 16px var(--font-body); fill: var(--ink); }
+.co .pp { font: 400 14px var(--font-body); fill: var(--link); }
+.co .pp tspan { fill: var(--muted); font-size: 12.5px; }
+.co a:hover .pp { text-decoration: underline; }
+
+.stages { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 14px 0; }
+.stage { border: 1px solid var(--line); border-top: 3px solid var(--c); border-radius: 10px; padding: 14px 16px 16px; }
+.stage .num { color: var(--c); margin: 0; }
+.stage h3 { margin: 4px 0 2px; font: 500 21px/1.2 var(--font-display); }
+.stage .yrs { margin: 0 0 10px; font: 400 12.5px var(--font-mono); color: var(--muted); }
+.stage ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.stage li { font-size: 14px; line-height: 1.35; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 8px; }
+.stage li span { color: var(--muted); font-size: 12.5px; white-space: nowrap; }
+.stage.next { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; border-style: dashed; border-top: 1px dashed var(--muted); padding: 12px 16px; }
+.stage.next h3 { margin: 0; }
+.stage.next p { margin: 0; color: var(--muted); font-size: 14px; }
+.eff { border: 1px dashed color-mix(in srgb, var(--core) 50%, var(--line)); border-radius: 10px; padding: 12px 16px; background: color-mix(in srgb, var(--core) 5%, var(--bg)); font-size: 14.5px; margin: 0; }
+.eff b { color: var(--core); font-weight: 600; }
+
+@media (max-width: 920px) {
+  .layout { grid-template-columns: 1fr; gap: 28px; padding-top: 24px; }
+  .profile { position: static; display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 4px 22px; align-items: center; }
+  .profile .photo { width: 120px; height: 120px; margin: 0; grid-row: span 3; }
+  .profile ul { grid-column: 1 / -1; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+  .open { grid-column: 1 / -1; }
+  .stages { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .wrap { padding: 0 18px; }
+  .profile { grid-template-columns: 88px minmax(0, 1fr); }
+  .profile .photo { width: 88px; height: 88px; }
+  .paper { grid-template-columns: 1fr; gap: 12px; }
+  .media { max-width: 440px; }
+  .news li { grid-template-columns: 1fr; gap: 0; }
+  .cv li { grid-template-columns: 1fr; }
+  .cv .when { grid-row: auto; grid-column: 1; }
+  .honors li { grid-template-columns: 1fr; gap: 0; }
+  .callouts { display: none; }
+  .figure { max-width: 260px; margin: 0 auto; }
+}
+</style>
+</head>
+<body>
+<header class="navbar">
+  <div class="wrap">
+    <nav aria-label="Sections">
+      <a href="#about" data-nav="about">About</a>
+      <a href="#news" data-nav="news">News</a>
+      <a href="#publications" data-nav="publications">Publications</a>
+      <a href="#roadmap" data-nav="roadmap">Roadmap</a>
+      <a href="#education" data-nav="education">Education</a>
+      <a href="#experience" data-nav="experience">Experience</a>
+      <a href="#honors" data-nav="honors">Honors &amp; Service</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+<div class="layout">
+
+  <aside class="profile" aria-label="Profile and contact">
+    <img class="photo" src="images/anh-dao.jpg" alt="Portrait of Anh Dao" width="150" height="150">
+    <h1>Anh Dao</h1>
+    <p class="role">Ph.D. Student, University of Central Florida</p>
+    <ul>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><span class="plain">Orlando, FL, USA</span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 7l8.5 6 8.5-6"/></svg><a href="mailto:anh.dao@ucf.edu">anh.dao@ucf.edu</a></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9.5L12 4l10 5.5-10 5.5z"/><path d="M6 12v4.5c3.5 2.5 8.5 2.5 12 0V12"/><path d="M22 9.5v5"/></svg><a href="https://scholar.google.com/citations?user=EOD0QkMAAAAJ">Google Scholar</a></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-4 1.4-4-2-6-2.5M15 21v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.3 4.3 0 0 0-.1-3.2s-1-.3-3.4 1.3a11.6 11.6 0 0 0-6.2 0C6.6 2.8 5.6 3.1 5.6 3.1a4.3 4.3 0 0 0-.1 3.2A4.6 4.6 0 0 0 4.2 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg><a href="https://github.com/anhdao69">GitHub</a></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 10.5V17M8 7.2v.1M12 17v-6.5M12 13.5c0-2 1.2-3 2.6-3S17 11.3 17 13v4"/></svg><a href="https://www.linkedin.com/in/anhdao6">LinkedIn</a></li>
+    </ul>
+    <p class="open"><b>Open to research internships</b>Embodied AI, robot learning and efficient models, 2027.</p>
+  </aside>
+
+  <div>
+  <!-- ================= HOME ================= -->
+  <main id="view-home">
+    <section id="about" class="about" aria-labelledby="about-h">
+      <h2 id="about-h">About</h2>
+      <p><em>Xin chào</em>, hello! I'm a Ph.D. student in Computer Science at the <img class="logo" src="images/ucf.png" alt="" width="20" height="20">University of Central Florida, advised by <a href="https://42shawn.github.io">Prof. Yuzhang Shang</a>. I received my bachelor's degree from <img class="logo" src="images/msu.png" alt="" width="17" height="20">Michigan State University with three majors and a 3.97 / 4.0 GPA, where I worked with <a href="https://www.egr.msu.edu/~yukong/">Prof. Yu Kong</a> and <a href="https://jackyfl.github.io/">Yifan Li</a> on embodied question answering, vision-language models and human behavior understanding.</p>
+      <p>My research makes embodied AI efficient enough to run on real robots, across vision-language navigation, world action models and humanoids (see the <a href="#roadmap">roadmap</a>). I'm open to collaborations and 2027 research internships, so feel free to <a href="mailto:anh.dao@ucf.edu">email me</a>.</p>
+    </section>
+
+    <section id="news" aria-labelledby="news-h">
+      <h2 id="news-h">News</h2>
+      <ul class="news clip" id="news-list">
+<li><span class="when">Nov 2026</span><span class="what">Released <a href="#p-loopedwam">LoopedWAM</a> on arXiv, with code and model weights.</span></li>
+<li><span class="when">Oct 2026</span><span class="what">Two papers accepted to <b>Humanoids 2026</b>: <a href="#p-humanoidvln">HumanoidVLN</a> and <a href="#p-openbelief-nav">OpenBelief-Nav</a>.</span></li>
+<li><span class="when">Oct 2026</span><span class="what">Released <a href="#p-stagevln">StageVLN</a>: efficient vision-language navigation with training-only guidance.</span></li>
+<li><span class="when">Sep 2026</span><span class="what">Released <a href="#p-adageovln">AdaGeoVLN</a> on arXiv.</span></li>
+<li><span class="when">Aug 2026</span><span class="what">Started my Ph.D. at the University of Central Florida with Prof. Yuzhang Shang.</span></li>
+<li><span class="when">2026</span><span class="what"><a href="#p-forces">Beyond Motion Pattern</a> accepted to a <b>CVPR 2026</b> workshop.</span></li>
+<li><span class="when">Dec 2025</span><span class="what">Graduated from Michigan State University and received the College of Engineering Inclusive Excellence Award.</span></li>
+<li><span class="when">Sep 2025</span><span class="what"><a href="#p-industryeqa">IndustryEQA</a> accepted to <b>NeurIPS 2025</b>.</span></li>
+<li><span class="when">Aug 2025</span><span class="what">3rd place in the Visual Quality Comparison for LMMs Challenge at <b>ICCV 2025</b>.</span></li>
+<li><span class="when">Jul 2025</span><span class="what">1st place in the MAI 2025 Camera Scene Detection Challenge and the IViSE Interactive Track at <b>CVPR 2025</b> workshops.</span></li>
+      </ul>
+      <button class="more-news" id="more-news" type="button" aria-expanded="false">Show older news</button>
+    </section>
+
+    <section id="publications" aria-labelledby="pubs-h">
+      <h2 id="pubs-h">Publications</h2>
+      <p class="pub-note"><sup>*</sup> equal contribution · <span class="sw"></span>highlighted papers are ones I led as first author</p>
+<h3 class="year">2026</h3>
+<article class="paper lead" id="p-loopedwam">
+  <div class="media"><video muted autoplay loop playsinline preload="metadata" poster="images/loopedwam.jpg" aria-label="Video from LoopedWAM"><source src="images/loopedwam.mp4" type="video/mp4"></video></div>
+  <div class="text">
+    <h4 class="ptitle"><a href="https://anhdao69.github.io/LoopedWAM">LoopedWAM: Looped World Action Models for Elastic Inference</a></h4>
+    <p class="authors"><b>Anh Dao</b>, Xinxin Liu, Hang Yu, Jeffrey A. Chan Santiago, <a href="https://42shawn.github.io">Yuzhang Shang</a></p>
+    <p class="venue preprint">arXiv 2026</p>
+    <p class="links"><a href="https://anhdao69.github.io/LoopedWAM">project page</a><span class="sep">/</span><a href="https://arxiv.org/abs/2611.25595">arXiv</a><span class="sep">/</span><a href="https://github.com/anhdao69/LoopedWAM">code</a><span class="sep">/</span><a href="https://huggingface.co/anhdao69/LoopedWAM">models</a><span class="sep">/</span><button class="bib-btn" type="button" aria-expanded="false" aria-controls="p-loopedwam-bib">bibtex</button></p>
+    <p class="tldr">A compact world action model that stores 12 blocks but runs 30 layers by looping a shared core, and lets you choose the depth at test time. Tested on a real AgileX PiPER arm.</p>
+    <div class="bib" id="p-loopedwam-bib" hidden><pre>@article{dao2026loopedwam,
+  title     = {LoopedWAM: Looped World Action Models for Elastic Inference},
+  author    = {Anh Dao and Xinxin Liu and Hang Yu and Jeffrey A. Chan Santiago and Yuzhang Shang},
+  journal   = {arXiv preprint arXiv:2611.25595},
+  year      = {2026}
+}</pre><button class="copy-btn" type="button">Copy</button></div>
+  </div>
+</article>
+<article class="paper lead" id="p-glancenav">
+  <div class="media"><video muted autoplay loop playsinline preload="metadata" poster="images/glancenav.jpg" aria-label="Video from GlanceNav"><source src="images/glancenav.mp4" type="video/mp4"></video></div>
+  <div class="text">
+    <h4 class="ptitle"><a href="https://glancenav.github.io/">GlanceNav: Efficient Vision-and-Language Navigation with Streaming Memory and Counterfactual Rewind</a></h4>
+    <p class="authors"><b>Anh Dao</b>, Quan-Dung Pham, Danh Vinh Le, Tuyen Pham Le, Quan Nguyen, <a href="https://42shawn.github.io">Yuzhang Shang</a></p>
+    <p class="venue review">Under review</p>
+    <p class="links"><a href="https://glancenav.github.io/">project page</a></p>
+    <p class="tldr">Encodes each frame once into a streaming memory and learns to recover from its own mistakes with counterfactual rewind. Deployed on a real humanoid.</p>
+  </div>
+</article>
+<article class="paper lead" id="p-stagevln">
+  <div class="media"><img src="images/stagevln.jpg" alt="Figure from StageVLN" loading="lazy" width="960" height="600"></div>
+  <div class="text">
+    <h4 class="ptitle"><a href="https://stagevln.github.io/">StageVLN: Spatial and Trajectory Auxiliary Guidance for Efficient Vision-Language Navigation</a></h4>
+    <p class="authors"><b>Anh Dao</b><sup>*</sup>, Quan-Dung Pham<sup>*</sup>, Le Danh Vinh<sup>*</sup>, The Anh Nguyen, Nguyen Viet Tri Pham, Yiyu Chen, Pham Tuyen Le, Van-Truong Nguyen, Quan Nguyen</p>
+    <p class="venue preprint">arXiv 2026</p>
+    <p class="links"><a href="https://stagevln.github.io/">project page</a><span class="sep">/</span><a href="https://arxiv.org/abs/2610.05664">arXiv</a><span class="sep">/</span><a href="https://github.com/StageVLN/StageVLN">code</a><span class="sep">/</span><button class="bib-btn" type="button" aria-expanded="false" aria-controls="p-stagevln-bib">bibtex</button></p>
+    <p class="tldr">Spatial and trajectory guidance used only during training, so the navigator runs alone at inference: 71% less peak memory and 2.1x faster steps than JanusVLN.</p>
+    <div class="bib" id="p-stagevln-bib" hidden><pre>@article{dao2026stagevln,
+  title     = {StageVLN: Spatial and Trajectory Auxiliary Guidance for Efficient Vision-Language Navigation},
+  author    = {Anh Dao and Quan-Dung Pham and Le Danh Vinh and The Anh Nguyen and Nguyen Viet Tri Pham and Yiyu Chen and Pham Tuyen Le and Van-Truong Nguyen and Quan Nguyen},
+  journal   = {arXiv preprint arXiv:2610.05664},
+  year      = {2026}
+}</pre><button class="copy-btn" type="button">Copy</button></div>
+  </div>
+</article>
+<article class="paper" id="p-humanoidvln">
+  <div class="media"><video muted autoplay loop playsinline preload="metadata" poster="images/humanoidvln.jpg" aria-label="Video from HumanoidVLN"><source src="images/humanoidvln.mp4" type="video/mp4"></video></div>
+  <div class="text">
+    <h4 class="ptitle"><a href="https://humanoid-vln.github.io/">HumanoidVLN: A Physics-Grounded Simulator and Benchmark for Vision-Language Navigation Across Diverse Humanoid Embodiments</a></h4>
+    <p class="authors">Quan-Dung Pham<sup>*</sup>, <b>Anh Dao</b><sup>*</sup>, The-Anh Nguyen<sup>*</sup>, Minh Nguyen-Dinh<sup>*</sup>, Phuong Nam Dang<sup>*</sup>, Tri Pham, Hung Tran, Bach Dao, Tuyen P. Le, Truong Nguyen, Quan Nguyen</p>
+    <p class="venue accepted">Humanoids 2026</p>
+    <p class="links"><a href="https://humanoid-vln.github.io/">project page</a><span class="sep">/</span><a href="https://arxiv.org/abs/2608.12860">arXiv</a><span class="sep">/</span><button class="bib-btn" type="button" aria-expanded="false" aria-controls="p-humanoidvln-bib">bibtex</button></p>
+    <p class="tldr">A physics-grounded Isaac Sim benchmark for language-guided navigation on four humanoid robots, with a sim-to-real check on a Unitree G1.</p>
+    <div class="bib" id="p-humanoidvln-bib" hidden><pre>@inproceedings{pham2026humanoidvln,
+  title     = {HumanoidVLN: A Physics-Grounded Simulator and Benchmark for Vision-Language Navigation Across Diverse Humanoid Embodiments},
+  author    = {Quan-Dung Pham and Anh Dao and The-Anh Nguyen and Minh Nguyen-Dinh and Phuong Nam Dang and Tri Pham and Hung Tran and Bach Dao and Tuyen P. Le and Truong Nguyen and Quan Nguyen},
+  booktitle = {IEEE-RAS International Conference on Humanoid Robots (Humanoids)},
+  year      = {2026}
+}</pre><button class="copy-btn" type="button">Copy</button></div>
+  </div>
+</article>
+<article class="paper" id="p-openbelief-nav">
+  <div class="media"><img src="images/openbelief-nav.jpg" alt="Figure from OpenBelief-Nav" loading="lazy" width="960" height="600"></div>
+  <div class="text">
+    <h4 class="ptitle"><a href="https://openbelief-nav.github.io/">OpenBelief-Nav: Evidence-Preserving Object Memory for Open-Vocabulary Language-Guided Navigation</a></h4>
+    <p class="authors">Dinh Tuan Nguyen<sup>*</sup>, <b>Anh Dao</b><sup>*</sup>, Phuong Nam Dang, Quan-Dung Pham, Tuyen P. Le, Truong Nguyen, Quan Nguyen</p>
+    <p class="venue accepted">Humanoids 2026</p>
+    <p class="links"><a href="https://openbelief-nav.github.io/">project page</a><span class="sep">/</span><a href="https://arxiv.org/abs/2608.13923">arXiv</a><span class="sep">/</span><button class="bib-btn" type="button" aria-expanded="false" aria-controls="p-openbelief-nav-bib">bibtex</button></p>
+    <p class="tldr">An object memory that keeps alternative labels, confidence and evidence for each object instead of committing to one label.</p>
+    <div class="bib" id="p-openbelief-nav-bib" hidden><pre>@inproceedings{nguyen2026openbeliefnav,
+  title     = {OpenBelief-Nav: Evidence-Preserving Object Memory for Open-Vocabulary Language-Guided Navigation},
+  author    = {Dinh Tuan Nguyen and Anh Dao and Phuong Nam Dang and Quan-Dung Pham and Tuyen P. Le and Truong Nguyen and Quan Nguyen},
+  booktitle = {IEEE-RAS International Conference on Humanoid Robots (Humanoids)},
+  year      = {2026}
+}</pre><button class="copy-btn" type="button">Copy</button></div>
+  </div>
+</article>
+<article class="paper" id="p-adageovln">
+  <div class="media"><img src="images/adageovln.jpg" alt="Figure from AdaGeoVLN" loading="lazy" width="960" height="600"></div>
+  <div class="text">
+    <h4 class="ptitle"><a href="https://humanoid-research.github.io/adageovln/">AdaGeoVLN: Selective Geometry Across Representation Depth and Navigation Time for Vision-Language Navigation</a></h4>
+    <p class="authors">Quan-Dung Pham<sup>*</sup>, <b>Anh Dao</b><sup>*</sup>, Danh Vinh Le<sup>*</sup>, Nguyen Viet Tri Pham<sup>*</sup>, The-Anh Nguyen, Zhirui Dai, Yiyu Chen, Tuyen P. Le, Truong Nguyen, Quan Nguyen</p>
+    <p class="venue preprint">arXiv 2026</p>
+    <p class="links"><a href="https://humanoid-research.github.io/adageovln/">project page</a><span class="sep">/</span><a href="https://arxiv.org/abs/2609.18789">arXiv</a><span class="sep">/</span><button class="bib-btn" type="button" aria-expanded="false" aria-controls="p-adageovln-bib">bibtex</button></p>
+    <p class="tldr">Fuses geometry features from several depths of a frozen geometry model and keeps only the most useful ones in a fixed memory budget, from a single RGB stream.</p>
+    <div class="bib" id="p-adageovln-bib" hidden><pre>@article{pham2026adageovln,
+  title     = {AdaGeoVLN: Selective Geometry Across Representation Depth and Navigation Time for Vision-Language Navigation},
+  author    = {Quan-Dung Pham and Anh Dao and Danh Vinh Le and Nguyen Viet Tri Pham and The-Anh Nguyen and Zhirui Dai and Yiyu Chen and Tuyen P. Le and Truong Nguyen and Quan Nguyen},
+  journal   = {arXiv preprint arXiv:2609.18789},
+  year      = {2026}
+}</pre><button class="copy-btn" type="button">Copy</button></div>
+  </div>
+</article>
+<article class="paper lead" id="p-forces">
+  <div class="media"><img src="images/forces.jpg" alt="Figure from Beyond Motion Pattern" loading="lazy" width="960" height="600"></div>
+  <div class="text">
+    <h4 class="ptitle"><a href="https://arxiv.org/abs/2512.20451">Beyond Motion Pattern: An Empirical Study of Physical Forces for Human Motion Understanding</a></h4>
+    <p class="authors"><b>Anh Dao</b><sup>*</sup>, Manh Tran<sup>*</sup>, Yufei Zhang, Xiaoming Liu, <a href="https://zijunjkl.github.io/">Zijun Cui</a></p>
+    <p class="venue accepted">CVPR Workshops 2026</p>
+    <p class="links"><a href="https://arxiv.org/abs/2512.20451">arXiv</a><span class="sep">/</span><button class="bib-btn" type="button" aria-expanded="false" aria-controls="p-forces-bib">bibtex</button></p>
+    <p class="tldr">Adds estimated physical forces to motion-only models and measures the effect on gait recognition, action recognition and video captioning.</p>
+    <div class="bib" id="p-forces-bib" hidden><pre>@inproceedings{dao2026beyond,
+  title     = {Beyond Motion Pattern: An Empirical Study of Physical Forces for Human Motion Understanding},
+  author    = {Anh Dao and Manh Tran and Yufei Zhang and Xiaoming Liu and Zijun Cui},
+  booktitle = {IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW)},
+  year      = {2026}
+}</pre><button class="copy-btn" type="button">Copy</button></div>
+  </div>
+</article>
+<h3 class="year">2025</h3>
+<article class="paper" id="p-industryeqa">
+  <div class="media"><video muted autoplay loop playsinline preload="metadata" poster="images/industryeqa.jpg" aria-label="Video from IndustryEQA"><source src="images/industryeqa.mp4" type="video/mp4"></video></div>
+  <div class="text">
+    <h4 class="ptitle"><a href="https://johnx69.github.io/IndustryEQA/">IndustryEQA: Pushing the Frontiers of Embodied Question Answering in Industrial Scenarios</a></h4>
+    <p class="authors"><a href="https://jackyfl.github.io/">Yifan Li</a><sup>*</sup>, Yuhang Chen<sup>*</sup>, <b>Anh Dao</b><sup>*</sup>, Lichi Li, Zhongyi Cai, Zhen Tan, Tianlong Chen, <a href="https://www.egr.msu.edu/~yukong/">Yu Kong</a></p>
+    <p class="venue accepted">NeurIPS 2025</p>
+    <p class="links"><a href="https://johnx69.github.io/IndustryEQA/">project page</a><span class="sep">/</span><a href="https://arxiv.org/abs/2505.20640">arXiv</a><span class="sep">/</span><a href="https://github.com/JackYFL/IndustryEQA">code</a><span class="sep">/</span><a href="https://huggingface.co/datasets/IndustryEQA/IndustryEQA">data</a><span class="sep">/</span><button class="bib-btn" type="button" aria-expanded="false" aria-controls="p-industryeqa-bib">bibtex</button></p>
+    <p class="tldr">An embodied question answering benchmark for safety-critical warehouse scenes, built in Isaac Sim.</p>
+    <div class="bib" id="p-industryeqa-bib" hidden><pre>@inproceedings{li2025industryeqa,
+  title     = {IndustryEQA: Pushing the Frontiers of Embodied Question Answering in Industrial Scenarios},
+  author    = {Yifan Li and Yuhang Chen and Anh Dao and Lichi Li and Zhongyi Cai and Zhen Tan and Tianlong Chen and Yu Kong},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2025}
+}</pre><button class="copy-btn" type="button">Copy</button></div>
+  </div>
+</article>
+<article class="paper" id="p-industrynav">
+  <div class="media"><video muted autoplay loop playsinline preload="metadata" poster="images/industrynav.jpg" aria-label="Video from IndustryNav"><source src="images/industrynav.mp4" type="video/mp4"></video></div>
+  <div class="text">
+    <h4 class="ptitle"><a href="https://anhdao69.github.io/IndustryNav_website">IndustryNav: Exploring Spatial Reasoning of Embodied Agents in Dynamic Industrial Navigation</a></h4>
+    <p class="authors"><a href="https://jackyfl.github.io/">Yifan Li</a><sup>*</sup>, Lichi Li<sup>*</sup>, <b>Anh Dao</b><sup>*</sup>, Xinyu Zhou, Wenjun Huang, Tianyi Ma, Yicheng Qiao, Zheda Mai, Daeun Lee<span class="more" hidden>, Zichen Chen, Pan Wang, Lehan Yang, Tianlong Wang, Zhen Tan, Sheng Li, Mohit Bansal, Yang Ni, <a href="https://www.egr.msu.edu/~yukong/">Yu Kong</a></span> <button class="more-btn" type="button">+9 more</button></p>
+    <p class="venue preprint">arXiv 2025</p>
+    <p class="links"><a href="https://anhdao69.github.io/IndustryNav_website">project page</a><span class="sep">/</span><a href="https://arxiv.org/abs/2511.17384">arXiv</a><span class="sep">/</span><button class="bib-btn" type="button" aria-expanded="false" aria-controls="p-industrynav-bib">bibtex</button></p>
+    <p class="tldr">Tests spatial reasoning and safety of embodied agents navigating dynamic industrial scenes.</p>
+    <div class="bib" id="p-industrynav-bib" hidden><pre>@article{li2025industrynav,
+  title     = {IndustryNav: Exploring Spatial Reasoning of Embodied Agents in Dynamic Industrial Navigation},
+  author    = {Yifan Li and Lichi Li and Anh Dao and Xinyu Zhou and Wenjun Huang and Tianyi Ma and Yicheng Qiao and Zheda Mai and Daeun Lee and Zichen Chen and Pan Wang and Lehan Yang and Tianlong Wang and Zhen Tan and Sheng Li and Mohit Bansal and Yang Ni and Yu Kong},
+  journal   = {arXiv preprint arXiv:2511.17384},
+  year      = {2025}
+}</pre><button class="copy-btn" type="button">Copy</button></div>
+  </div>
+</article>
+<article class="paper" id="p-vllm-survey">
+  <div class="media"><img src="images/vllm-survey.jpg" alt="Figure from Visual Large Language Models for Generalized and Specialized Applications" loading="lazy" width="960" height="600"></div>
+  <div class="text">
+    <h4 class="ptitle"><a href="https://arxiv.org/abs/2501.02765">Visual Large Language Models for Generalized and Specialized Applications</a></h4>
+    <p class="authors"><a href="https://jackyfl.github.io/">Yifan Li</a>, Zhixin Lai, Wentao Bao, Zhen Tan, <b>Anh Dao</b>, Kewei Sui, Jiayi Shen, Dong Liu, Huan Liu, <a href="https://www.egr.msu.edu/~yukong/">Yu Kong</a></p>
+    <p class="venue preprint">arXiv 2025</p>
+    <p class="links"><a href="https://arxiv.org/abs/2501.02765">arXiv</a><span class="sep">/</span><a href="https://github.com/JackYFL/awesome-VLLMs">paper list</a><span class="sep">/</span><button class="bib-btn" type="button" aria-expanded="false" aria-controls="p-vllm-survey-bib">bibtex</button></p>
+    <div class="bib" id="p-vllm-survey-bib" hidden><pre>@article{li2025visual,
+  title     = {Visual Large Language Models for Generalized and Specialized Applications},
+  author    = {Yifan Li and Zhixin Lai and Wentao Bao and Zhen Tan and Anh Dao and Kewei Sui and Jiayi Shen and Dong Liu and Huan Liu and Yu Kong},
+  journal   = {arXiv preprint arXiv:2501.02765},
+  year      = {2025}
+}</pre><button class="copy-btn" type="button">Copy</button></div>
+  </div>
+</article>
+<h3 class="year">2024</h3>
+<article class="paper" id="p-faba">
+  <div class="media"><img src="images/faba.jpg" alt="Figure from Facial Affective Behavior Analysis with Instruction Tuning" loading="lazy" width="960" height="600"></div>
+  <div class="text">
+    <h4 class="ptitle"><a href="https://anhdao69.github.io/FABA/">Facial Affective Behavior Analysis with Instruction Tuning</a></h4>
+    <p class="authors"><a href="https://jackyfl.github.io/">Yifan Li</a>, <b>Anh Dao</b>, Wentao Bao, Zhen Tan, Tianlong Chen, Huan Liu, <a href="https://www.egr.msu.edu/~yukong/">Yu Kong</a></p>
+    <p class="venue accepted">ECCV 2024</p>
+    <p class="links"><a href="https://anhdao69.github.io/FABA/">project page</a><span class="sep">/</span><a href="https://arxiv.org/abs/2404.05052">arXiv</a><span class="sep">/</span><a href="https://github.com/JackYFL/EmoLA">code</a><span class="sep">/</span><button class="bib-btn" type="button" aria-expanded="false" aria-controls="p-faba-bib">bibtex</button></p>
+    <div class="bib" id="p-faba-bib" hidden><pre>@inproceedings{li2024facial,
+  title     = {Facial Affective Behavior Analysis with Instruction Tuning},
+  author    = {Yifan Li and Anh Dao and Wentao Bao and Zhen Tan and Tianlong Chen and Huan Liu and Yu Kong},
+  booktitle = {European Conference on Computer Vision (ECCV)},
+  year      = {2024}
+}</pre><button class="copy-btn" type="button">Copy</button></div>
+  </div>
+</article>
+    </section>
+
+    <section id="education" aria-labelledby="edu-h">
+      <h2 id="edu-h">Education</h2>
+      <ul class="cv">
+        <li><span class="what"><img class="logo" src="images/ucf.png" alt="" width="20" height="20">Ph.D. in Computer Science</span><span class="when">2026 – present</span><span class="where">University of Central Florida · advised by Prof. Yuzhang Shang</span></li>
+        <li><span class="what"><img class="logo" src="images/msu.png" alt="" width="17" height="20">B.S. in Computer Science, Mathematics and Applied Mathematics</span><span class="when">2022 – 2025</span><span class="where">Michigan State University · Honors College · Minor in Computational Mathematics, Science and Engineering · GPA 3.97 / 4.0</span></li>
+      </ul>
+    </section>
+
+    <section id="experience" aria-labelledby="exp-h">
+      <h2 id="exp-h">Experience</h2>
+      <ul class="cv">
+        <li><span class="what"><img class="logo" src="images/vinmotion.png" alt="" width="20" height="20">AI Research Engineer · VinMotion</span><span class="when">2026</span><span class="where">Vision-language navigation for humanoid robots</span></li>
+        <li><span class="what"><img class="logo" src="images/zenai.png" alt="" width="20" height="20">AI Research Engineer Intern · ZenAI</span><span class="when">May – Sep 2025</span><span class="where">Fine-tuned image-generation models (Flux, Qwen-Image and SDXL) and built them into production pipelines</span></li>
+      </ul>
+    </section>
+
+    <section id="honors" aria-labelledby="hon-h">
+      <h2 id="hon-h">Honors &amp; Service</h2>
+      <h3 class="sub-h mono" style="margin-top:0">Honors and awards</h3>
+      <ul class="cv honors">
+        <li><span class="when">Dec 2025</span><span class="what"><b>Inclusive Excellence Award</b>, MSU College of Engineering</span></li>
+        <li><span class="when">Aug 2025</span><span class="what"><b>3rd place</b>, Visual Quality Comparison for LMMs Challenge, ICCV 2025 · <a href="https://arxiv.org/pdf/2509.09190">paper</a></span></li>
+        <li><span class="when">Mar 2025</span><span class="what"><b>1st place</b>, MAI 2025 Camera Scene Detection Challenge, CVPR 2025 workshop · <a href="https://openaccess.thecvf.com/content/CVPR2025W/MAI/papers/Phan-Nguyen_Cycle_Training_with_Semi-Supervised_Domain_Adaptation_Bridging_Accuracy_and_Efficiency_CVPRW_2025_paper.pdf">paper</a></span></li>
+        <li><span class="when">Mar 2025</span><span class="what"><b>1st place</b>, Interactive Track, IViSE Workshop, CVPR 2025 · <a href="https://openaccess.thecvf.com/content/CVPR2025W/IViSE/papers/Tran_Towards_Efficient_and_Robust_Moment_Retrieval_System_A_Unified_Framework_CVPRW_2025_paper.pdf">paper</a></span></li>
+        <li><span class="when">Aug 2023</span><span class="what"><b>Wielenga Research Scholar</b>, MSU Honors College</span></li>
+        <li><span class="when">Mar 2023</span><span class="what"><b>Best Use of AI</b>, Spartan Hackathon 8, Michigan State University</span></li>
+        <li><span class="when">2022 – 2025</span><span class="what"><b>Dean's List</b>, every semester, Michigan State University</span></li>
+        <li><span class="when">2022</span><span class="what"><b>TensorFlow Developer Certificate</b>, Google</span></li>
+      </ul>
+      <h3 class="sub-h mono">Reviewing</h3>
+      <ul class="cv honors">
+        <li><span class="when">2027</span><span class="what">IEEE International Conference on Robotics and Automation (<b>ICRA</b>)</span></li>
+        <li><span class="when">2025</span><span class="what">IEEE/CVF Winter Conference on Applications of Computer Vision (<b>WACV</b>)</span></li>
+      </ul>
+      <h3 class="sub-h mono">Teaching</h3>
+      <ul class="cv honors">
+        <li><span class="when">Fall 2026</span><span class="what">Teaching Assistant, <b>CAP 6411</b> Computer Vision Systems, University of Central Florida</span></li>
+        <li><span class="when">Fall 2024</span><span class="what">Teaching Assistant, <b>MTH 103</b> College Algebra, Michigan State University</span></li>
+        <li><span class="when">Fall 2023</span><span class="what">Teaching Assistant, <b>CSE 102</b> Algorithmic Thinking and Programming, Michigan State University</span></li>
+      </ul>
+    </section>
+  </main>
+
+  <!-- ================= ROADMAP ================= -->
+  <main id="view-roadmap" hidden>
+    <section aria-labelledby="rm-h">
+      <h2 id="rm-h">Roadmap</h2>
+      <p class="rm-intro">One robot, three abilities. My work moved from how agents perceive space, to how they navigate by language, to how they act through world action models, with efficiency as the constraint throughout. Hover a part of the robot, or select a paper to open it.</p>
+
+      <div class="figure">
+        <svg class="robot" id="robot" viewBox="70 10 820 466" role="group" aria-label="Humanoid robot. Head: perception papers. Legs: navigation papers. Arms: world action model papers. Core: efficiency papers. Select a part to highlight its papers in the stages below.">
+          <defs>
+            <linearGradient id="metal" x1="0" x2="1" y1="0" y2="0.3">
+              <stop class="g1" offset="0"/><stop class="g2" offset=".6"/><stop class="g3" offset="1"/>
+            </linearGradient>
+            <radialGradient id="lensG" cx=".38" cy=".35" r=".7">
+              <stop offset="0" stop-color="#bfeaff"/><stop offset=".55" stop-color="#3fa9e0"/><stop offset="1" stop-color="#1b5f8c"/>
+            </radialGradient>
+            <linearGradient id="screenG" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0" stop-color="#2a313b"/><stop offset="1" stop-color="#0d1015"/>
+            </linearGradient>
+          </defs>
+
+          <g class="callouts">
+            <g class="co" data-part="head">
+              <path class="lead-line" d="M410 74 H346"/><circle class="dot" cx="410" cy="74" r="3"/>
+              <text class="t1" x="334" y="56" text-anchor="end">HEAD · PERCEIVE</text>
+              <text class="t2" x="334" y="79" text-anchor="end">Spatial reasoning and safety</text>
+              <a href="#p-industryeqa"><text class="pp" x="334" y="105" text-anchor="end">IndustryEQA <tspan>NeurIPS 2025</tspan></text></a>
+              <a href="#p-industrynav"><text class="pp" x="334" y="127" text-anchor="end">IndustryNav <tspan>arXiv 2025</tspan></text></a>
+              <a href="#p-openbelief-nav"><text class="pp" x="334" y="149" text-anchor="end">OpenBelief-Nav <tspan>Humanoids 2026</tspan></text></a>
+            </g>
+            <g class="co" data-part="legs">
+              <path class="lead-line" d="M444 358 H346"/><circle class="dot" cx="444" cy="358" r="3"/>
+              <text class="t1" x="334" y="340" text-anchor="end">LEGS · NAVIGATE</text>
+              <text class="t2" x="334" y="363" text-anchor="end">Language-guided navigation</text>
+              <a href="#p-humanoidvln"><text class="pp" x="334" y="389" text-anchor="end">HumanoidVLN <tspan>Humanoids 2026</tspan></text></a>
+              <a href="#p-stagevln"><text class="pp" x="334" y="411" text-anchor="end">StageVLN <tspan>arXiv 2026</tspan></text></a>
+              <a href="#p-adageovln"><text class="pp" x="334" y="433" text-anchor="end">AdaGeoVLN <tspan>arXiv 2026</tspan></text></a>
+              <a href="#p-glancenav"><text class="pp" x="334" y="455" text-anchor="end">GlanceNav <tspan>under review</tspan></text></a>
+            </g>
+            <g class="co" data-part="core">
+              <path class="lead-line" d="M496 172 H614"/><circle class="dot" cx="614" cy="172" r="3"/>
+              <text class="t1" x="626" y="154">CORE · EFFICIENCY</text>
+              <text class="t2" x="626" y="177">Less compute at inference</text>
+              <a href="#p-loopedwam"><text class="pp" x="626" y="203">LoopedWAM <tspan>looped shared depth</tspan></text></a>
+              <a href="#p-glancenav"><text class="pp" x="626" y="225">GlanceNav <tspan>streaming memory</tspan></text></a>
+              <a href="#p-stagevln"><text class="pp" x="626" y="247">StageVLN <tspan>training-only guidance</tspan></text></a>
+              <a href="#p-adageovln"><text class="pp" x="626" y="269">AdaGeoVLN <tspan>budgeted geometry memory</tspan></text></a>
+            </g>
+            <g class="co" data-part="arms">
+              <path class="lead-line" d="M572 292 L596 358 H614"/><circle class="dot" cx="614" cy="358" r="3"/>
+              <text class="t1" x="626" y="340">ARMS · ACT</text>
+              <text class="t2" x="626" y="363">World action models</text>
+              <a href="#p-loopedwam"><text class="pp" x="626" y="389">LoopedWAM <tspan>arXiv 2026</tspan></text></a>
+              <text class="pn" x="626" y="411">Real-robot results on an AgileX PiPER arm</text>
+            </g>
+          </g>
+
+          <g transform="translate(330 22)">
+            <ellipse class="shadow" cx="150" cy="437" rx="70" ry="6.5"/>
+            <circle class="trail" cx="230" cy="437" r="2.6"/><circle class="trail" cx="248" cy="437" r="2.6" opacity=".7"/><circle class="trail" cx="266" cy="437" r="2.6" opacity=".45"/><circle class="trail" cx="284" cy="437" r="2.6" opacity=".25"/>
+
+            <!-- legs -->
+            <g class="bp" data-part="legs" tabindex="0" role="button" aria-label="Legs: highlight navigation papers">
+              <rect class="plate" x="115" y="258" width="26" height="78" rx="13"/>
+              <rect class="plate" x="159" y="258" width="26" height="78" rx="13"/>
+              <path class="plate" d="M117 342 H139 C141 360 141 384 138 406 H118 C115 384 115 360 117 342 Z"/>
+              <path class="plate" d="M161 342 H183 C185 360 185 384 182 406 H162 C159 384 159 360 161 342 Z"/>
+              <path class="seam" d="M121 372 H135 M165 372 H179"/>
+              <circle class="acc" cx="128" cy="339" r="11"/><circle class="acc" cx="172" cy="339" r="11"/>
+              <rect class="acc" x="114" y="403" width="28" height="7" rx="3"/><rect class="acc" x="158" y="403" width="28" height="7" rx="3"/>
+              <path class="plate" d="M110 410 H140 C151 410 158 417 158 425 V432 H104 V417 C104 413 106 410 110 410 Z"/>
+              <path class="plate" d="M160 410 H190 C194 410 196 413 196 417 V432 H142 V425 C142 417 149 410 160 410 Z"/>
+              <rect class="accs" x="104" y="430" width="54" height="4" rx="2"/><rect class="accs" x="142" y="430" width="54" height="4" rx="2"/>
+              <circle class="acc" cx="128" cy="262" r="10"/><circle class="acc" cx="172" cy="262" r="10"/>
+            </g>
+
+            <!-- body -->
+            <g class="body">
+              <path class="plate" d="M112 232 H188 C191 232 193 235 192 238 L185 257 C176 268 124 268 115 257 L108 238 C107 235 109 232 112 232 Z"/>
+              <rect class="plate" x="124" y="210" width="52" height="24" rx="9"/>
+              <path class="seam" d="M130 218 H170 M130 226 H170"/>
+              <path class="plate" d="M100 120 C100 111 112 106 126 106 H174 C188 106 200 111 200 120 L204 150 C204 182 190 204 172 212 H128 C110 204 96 182 96 150 Z"/>
+              <rect class="belly" x="116" y="122" width="68" height="62" rx="22"/>
+              <path class="seam" d="M150 186 V208"/>
+              <rect class="plate" x="140" y="94" width="20" height="16" rx="5"/>
+              <path class="seam" d="M143 100 H157 M143 105 H157"/>
+            </g>
+
+            <!-- arms -->
+            <g class="bp" data-part="arms" tabindex="0" role="button" aria-label="Arms: highlight world action model papers">
+              <rect class="plate" x="78" y="130" width="22" height="62" rx="11" transform="rotate(10 89 130)"/>
+              <rect class="plate" x="67" y="191" width="22" height="56" rx="11" transform="rotate(5 78 191)"/>
+              <rect class="acc" x="62" y="243" width="23" height="7" rx="3" transform="rotate(5 74 246)"/>
+              <g transform="rotate(5 74 250)">
+                <rect class="plate" x="63" y="250" width="22" height="18" rx="7"/>
+                <rect class="plate" x="64" y="264" width="6" height="12" rx="3"/><rect class="plate" x="71" y="265" width="6" height="12" rx="3"/><rect class="plate" x="78" y="264" width="6" height="11" rx="3"/>
+                <rect class="plate" x="82" y="252" width="7" height="13" rx="3.5" transform="rotate(-20 85 258)"/>
+              </g>
+              <circle class="acc" cx="78" cy="191" r="8.5"/>
+              <circle class="acc" cx="90" cy="126" r="15"/>
+
+              <rect class="plate" x="200" y="130" width="22" height="62" rx="11" transform="rotate(-10 211 130)"/>
+              <g>
+                <rect class="plate" x="211" y="191" width="22" height="56" rx="11" transform="rotate(-5 222 191)"/>
+                <rect class="acc" x="215" y="243" width="23" height="7" rx="3" transform="rotate(-5 226 246)"/>
+                <g transform="rotate(-5 226 250)">
+                  <rect class="plate" x="215" y="250" width="22" height="18" rx="7"/>
+                  <rect class="plate" x="216" y="264" width="6" height="11" rx="3"/><rect class="plate" x="223" y="265" width="6" height="12" rx="3"/><rect class="plate" x="230" y="264" width="6" height="12" rx="3"/>
+                  <rect class="plate" x="211" y="252" width="7" height="13" rx="3.5" transform="rotate(20 215 258)"/>
+                </g>
+                <animateTransform id="wave" attributeName="transform" type="rotate" begin="indefinite" dur="2.4s" fill="remove"
+                  values="0 222 191; -150 222 191; -172 222 191; -138 222 191; -170 222 191; -142 222 191; 0 222 191"
+                  keyTimes="0; .2; .32; .44; .56; .7; 1" calcMode="spline"
+                  keySplines=".4 0 .2 1; .4 0 .6 1; .4 0 .6 1; .4 0 .6 1; .4 0 .6 1; .4 0 .2 1"/>
+              </g>
+              <circle class="acc" cx="222" cy="191" r="8.5"/>
+              <circle class="acc" cx="210" cy="126" r="15"/>
+            </g>
+
+            <!-- head -->
+            <g class="bp" data-part="head" tabindex="0" role="button" aria-label="Head: highlight perception papers">
+              <rect class="plate" x="92" y="6" width="116" height="92" rx="44"/>
+              <rect class="screen" x="105" y="19" width="90" height="66" rx="28"/>
+              <path class="glare" d="M116 30 C124 24 136 22 148 22"/>
+              <g id="eyes">
+                <ellipse class="eye" cx="133" cy="47" rx="7.5" ry="11"><animate attributeName="ry" values="11;11;1.2;11" keyTimes="0;.93;.965;1" dur="4.8s" repeatCount="indefinite"/></ellipse>
+                <ellipse class="eye" cx="167" cy="47" rx="7.5" ry="11"><animate attributeName="ry" values="11;11;1.2;11" keyTimes="0;.93;.965;1" dur="4.8s" repeatCount="indefinite"/></ellipse>
+              </g>
+              <path class="smile" d="M134 66 Q150 78 166 66"/>
+              <rect class="acc" x="84" y="36" width="12" height="32" rx="6"/><path class="accl" d="M90 44 V60"/>
+              <rect class="acc" x="204" y="36" width="12" height="32" rx="6"/><path class="accl" d="M210 44 V60"/>
+            </g>
+
+            <!-- core -->
+            <g class="bp" data-part="core" tabindex="0" role="button" aria-label="Core: highlight efficiency papers">
+              <circle class="glow" cx="150" cy="150" r="21"/>
+              <circle class="acc" cx="150" cy="150" r="16"/>
+              <path class="accs" d="M153.5 137 l-10 14.5 h7 l-3.5 11 10-14.5 h-7 z"/>
+            </g>
+          </g>
+        </svg>
+      </div>
+
+      <p class="pick" id="pick" aria-live="polite">Select a part of the robot to highlight its papers below.</p>
+
+      <div class="stages" id="stages">
+        <article class="stage" data-part="head">
+          <p class="num mono">Stage I</p><h3>Perceive</h3><p class="yrs">2024 – 2026</p>
+          <ul>
+            <li data-parts="head"><a href="#p-faba">FABA</a><span>ECCV 2024</span></li>
+            <li data-parts="head"><a href="#p-industryeqa">IndustryEQA</a><span>NeurIPS 2025</span></li>
+            <li data-parts="head"><a href="#p-industrynav">IndustryNav</a><span>arXiv 2025</span></li>
+            <li data-parts="head"><a href="#p-forces">Beyond Motion Pattern</a><span>CVPRW 2026</span></li>
+          </ul>
+        </article>
+        <article class="stage" data-part="legs">
+          <p class="num mono">Stage II</p><h3>Navigate</h3><p class="yrs">2026</p>
+          <ul>
+            <li data-parts="legs"><a href="#p-humanoidvln">HumanoidVLN</a><span>Humanoids 2026</span></li>
+            <li data-parts="legs head"><a href="#p-openbelief-nav">OpenBelief-Nav</a><span>Humanoids 2026</span></li>
+            <li data-parts="legs core"><a href="#p-adageovln">AdaGeoVLN</a><span>arXiv 2026</span></li>
+            <li data-parts="legs core"><a href="#p-stagevln">StageVLN</a><span>arXiv 2026</span></li>
+            <li data-parts="legs core"><a href="#p-glancenav">GlanceNav</a><span>under review</span></li>
+          </ul>
+        </article>
+        <article class="stage" data-part="arms">
+          <p class="num mono">Stage III</p><h3>Act</h3><p class="yrs">2026 – now</p>
+          <ul>
+            <li data-parts="arms core"><a href="#p-loopedwam">LoopedWAM</a><span>arXiv 2026</span></li>
+          </ul>
+        </article>
+        <article class="stage next">
+          <p class="num mono" style="color:var(--muted)">Next</p><h3>Together</h3>
+          <p>Navigation and manipulation on one humanoid, on the compute it carries.</p>
+        </article>
+      </div>
+      <p class="eff" data-part="core"><b>Efficiency throughout.</b> Guidance used only in training (StageVLN), streaming memory that encodes each frame once (GlanceNav), a fixed budget for geometry memory (AdaGeoVLN), and looped shared depth with test-time depth choice (LoopedWAM).</p>
+    </section>
+  </main>
+  </div>
+</div>
+
+<footer>
+  <span>© 2026 Anh Dao</span>
+  <span>Layout adapted from <a href="https://github.com/jonbarron/website">Jon Barron's template</a> · Updated November 2026</span>
+</footer>
+</div>
+
+<script>
+(function () {
+  var home = document.getElementById('view-home'), road = document.getElementById('view-roadmap');
+  var navLinks = [].slice.call(document.querySelectorAll('.navbar a'));
+  var robot = document.getElementById('robot');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var videos = [].slice.call(document.querySelectorAll('video'));
+  var sections = ['about', 'news', 'publications', 'education', 'experience', 'honors'].map(function (id) { return document.getElementById(id); });
+
+  function markNav(id) { navLinks.forEach(function (a) { a.classList.toggle('on', a.dataset.nav === id); }); }
+  function show(view) {
+    home.hidden = view !== 'home'; road.hidden = view !== 'roadmap';
+    videos.forEach(function (v) { try { if (view === 'home' && !reduce) { var p = v.play(); if (p && p.catch) p.catch(function () {}); } else v.pause(); } catch (e) {} });
+    if (view === 'roadmap') {
+      markNav('roadmap');
+      if (!reduce) { try { document.getElementById('wave').beginElement(); } catch (e) {} }
+    }
+  }
+  function route() {
+    var h = decodeURIComponent(location.hash.slice(1));
+    if (h === 'roadmap') { show('roadmap'); window.scrollTo(0, 0); return; }
+    show('home');
+    var el = h && document.getElementById(h);
+    if (el) {
+      el.scrollIntoView({ block: el.classList.contains('paper') ? 'center' : 'start' });
+      if (el.classList.contains('paper')) { el.classList.add('flash'); setTimeout(function () { el.classList.remove('flash'); }, 1400); }
+    } else window.scrollTo(0, 0);
+    spy();
+  }
+  // highlight the section in view
+  function spy() {
+    if (!road.hidden) return;
+    var cur = 'about';
+    sections.forEach(function (s) { if (s.getBoundingClientRect().top < 140) cur = s.id; });
+    markNav(cur);
+  }
+  window.addEventListener('scroll', spy, { passive: true });
+  window.addEventListener('hashchange', route);
+  route();
+
+  // older news
+  var list = document.getElementById('news-list'), more = document.getElementById('more-news');
+  if (list.children.length <= 6) more.hidden = true;
+  more.addEventListener('click', function () {
+    var open = list.classList.toggle('clip') === false;
+    more.textContent = open ? 'Show fewer' : 'Show older news'; more.setAttribute('aria-expanded', String(open));
+  });
+
+  // robot: hover previews a part; click selects it and highlights its papers in the stages
+  var parts = [].slice.call(document.querySelectorAll('.bp'));
+  var cos = [].slice.call(document.querySelectorAll('.co'));
+  var stageWrap = document.getElementById('stages');
+  var stageCards = [].slice.call(document.querySelectorAll('.stage[data-part]'));
+  var items = [].slice.call(document.querySelectorAll('.stage li[data-parts]'));
+  var eff = document.querySelector('.eff'), pick = document.getElementById('pick');
+  var NAMES = { head: 'Head · Perceive', legs: 'Legs · Navigate', arms: 'Arms · Act', core: 'Core · Efficiency' };
+  var sel = null;
+  function focus(part) {
+    robot.classList.toggle('focus', !!part);
+    parts.forEach(function (p) { p.classList.toggle('on', p.dataset.part === part); });
+    cos.forEach(function (c) { c.classList.toggle('on', c.dataset.part === part); });
+  }
+  function select(part) {
+    sel = (part === sel) ? null : part;
+    focus(sel);
+    stageWrap.classList.toggle('picking', !!sel);
+    stageWrap.dataset.sel = sel || '';
+    var n = 0;
+    items.forEach(function (li) {
+      var hit = !!sel && (' ' + li.dataset.parts + ' ').indexOf(' ' + sel + ' ') > -1;
+      li.classList.toggle('hit', hit); if (hit) n++;
+    });
+    stageCards.forEach(function (c) { c.classList.toggle('hit', !!sel && !!c.querySelector('li.hit')); });
+    eff.classList.toggle('hit', sel === 'core');
+    parts.forEach(function (p) { p.setAttribute('aria-pressed', String(p.dataset.part === sel)); });
+    if (sel) {
+      pick.innerHTML = '<b>' + NAMES[sel] + '</b>: ' + n + (n === 1 ? ' paper' : ' papers') + ' highlighted below. <button type="button" id="clear-pick">Clear</button>';
+      document.getElementById('clear-pick').addEventListener('click', function () { select(sel); });
+      stageWrap.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'nearest' });
+    } else {
+      pick.textContent = 'Select a part of the robot to highlight its papers below.';
+    }
+  }
+  parts.concat(cos).forEach(function (el) {
+    el.addEventListener('pointerenter', function () { focus(el.dataset.part); });
+    el.addEventListener('pointerleave', function () { focus(sel); });
+  });
+  parts.forEach(function (p) {
+    p.addEventListener('click', function () { select(p.dataset.part); });
+    p.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(p.dataset.part); } });
+  });
+  if (reduce && robot.pauseAnimations) robot.pauseAnimations();
+
+  // phones: crop the drawing to the robot itself (the stage cards carry the labels)
+  var mq = window.matchMedia('(max-width: 600px)');
+  function fit() { robot.setAttribute('viewBox', mq.matches ? '378 10 204 466' : '70 10 820 466'); }
+  if (mq.addEventListener) mq.addEventListener('change', fit); else mq.addListener(fit);
+  fit();
+
+  // eyes follow the pointer
+  var eyes = document.getElementById('eyes');
+  if (!reduce) window.addEventListener('pointermove', function (e) {
+    if (road.hidden) return;
+    var vb = robot.viewBox.baseVal, r = robot.getBoundingClientRect(); if (!r.width) return;
+    var cx = r.left + (480 - vb.x) / vb.width * r.width, cy = r.top + (69 - vb.y) / vb.height * r.height;
+    var dx = e.clientX - cx, dy = e.clientY - cy, d = Math.hypot(dx, dy) || 1, k = Math.min(1, d / 160);
+    eyes.setAttribute('transform', 'translate(' + (dx / d * 7 * k).toFixed(2) + ' ' + (dy / d * 5 * k).toFixed(2) + ')');
+  }, { passive: true });
+
+  // authors "+N more", BibTeX toggle and copy
+  [].forEach.call(document.querySelectorAll('.more-btn'), function (b) {
+    b.addEventListener('click', function () { b.previousElementSibling.hidden = false; b.remove(); });
+  });
+  [].forEach.call(document.querySelectorAll('.bib-btn'), function (b) {
+    b.addEventListener('click', function () {
+      var box = document.getElementById(b.getAttribute('aria-controls'));
+      box.hidden = !box.hidden; b.setAttribute('aria-expanded', String(!box.hidden));
+    });
+  });
+  [].forEach.call(document.querySelectorAll('.copy-btn'), function (b) {
+    b.addEventListener('click', function () {
+      var pre = b.previousElementSibling, done = function (t) { b.textContent = t; setTimeout(function () { b.textContent = 'Copy'; }, 1500); };
+      var sel = function () { var r = document.createRange(); r.selectNodeContents(pre); var s = getSelection(); s.removeAllRanges(); s.addRange(r); done('Selected'); };
+      try { navigator.clipboard.writeText(pre.textContent).then(function () { done('Copied'); }, sel); } catch (e) { sel(); }
+    });
+  });
+})();
+</script>
+</body>
+</html>
