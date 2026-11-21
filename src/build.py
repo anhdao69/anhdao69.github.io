@@ -32,6 +32,7 @@ NEWS = [
     ("Oct 2026", 'Released <a href="#p-stagevln">StageVLN</a>: efficient vision-language navigation with training-only guidance.'),
     ("Sep 2026", 'Released <a href="#p-adageovln">AdaGeoVLN</a> on arXiv.'),
     ("Aug 2026", 'Started my Ph.D. at the University of Central Florida with Prof. Yuzhang Shang.'),
+    ("Jun 2026", '9th place of 62 teams in the LeHome Challenge (online simulation round) at <b>ICRA 2026</b>.'),
     ("2026", '<a href="#p-forces">Beyond Motion Pattern</a> accepted to a <b>CVPR 2026</b> workshop.'),
     ("Dec 2025", 'Graduated from Michigan State University and received the College of Engineering Inclusive Excellence Award.'),
     ("Sep 2025", '<a href="#p-industryeqa">IndustryEQA</a> accepted to <b>NeurIPS 2025</b>.'),
