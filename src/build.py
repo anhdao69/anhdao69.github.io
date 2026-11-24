@@ -27,6 +27,7 @@ HOME = {
 # ---------------------------------------------------------------- news
 # (month, html text). Newest first.
 NEWS = [
+    ("Nov 2026", 'Released <a href="#p-glancenav">GlanceNav</a> on arXiv: streaming memory and counterfactual rewind for vision-and-language navigation.'),
     ("Nov 2026", 'Released <a href="#p-loopedwam">LoopedWAM</a> on arXiv, with code and model weights.'),
     ("Oct 2026", 'Two papers accepted to <b>Humanoids 2026</b>: <a href="#p-humanoidvln">HumanoidVLN</a> and <a href="#p-openbelief-nav">OpenBelief-Nav</a>.'),
     ("Oct 2026", 'Released <a href="#p-stagevln">StageVLN</a>: efficient vision-language navigation with training-only guidance.'),
@@ -51,11 +52,12 @@ PAPERS = [
          links=[("project page", "https://anhdao69.github.io/LoopedWAM"), ("arXiv", "https://arxiv.org/abs/2611.25595"),
                 ("code", "https://github.com/anhdao69/LoopedWAM"), ("models", "https://huggingface.co/anhdao69/LoopedWAM")],
          bib=("article", "dao2026loopedwam", "journal", "arXiv preprint arXiv:2611.25595")),
-    dict(year=2026, key="glancenav", part="legs", status="review", venue="Under review", lead=True,
+    dict(year=2026, key="glancenav", part="legs", status="preprint", venue="arXiv 2026", lead=True,
          title="GlanceNav: Efficient Vision-and-Language Navigation with Streaming Memory and Counterfactual Rewind",
          authors=["Anh Dao", "Quan-Dung Pham", "Danh Vinh Le", "Tuyen Pham Le", "Quan Nguyen", "Yuzhang Shang"],
          tldr="Encodes each frame once into a streaming memory and learns to recover from its own mistakes with counterfactual rewind. Deployed on a real humanoid.",
-         links=[("project page", "https://glancenav.github.io/")]),
+         links=[("project page", "https://glancenav.github.io/"), ("arXiv", "https://arxiv.org/abs/2611.30900")],
+         bib=("article", "dao2026glancenav", "journal", "arXiv preprint arXiv:2611.30900")),
     dict(year=2026, key="stagevln", part="legs", status="preprint", venue="arXiv 2026", lead=True,
          title="StageVLN: Spatial and Trajectory Auxiliary Guidance for Efficient Vision-Language Navigation",
          authors=["Anh Dao*", "Quan-Dung Pham*", "Le Danh Vinh*", "The Anh Nguyen", "Nguyen Viet Tri Pham", "Yiyu Chen", "Pham Tuyen Le", "Van-Truong Nguyen", "Quan Nguyen"],
